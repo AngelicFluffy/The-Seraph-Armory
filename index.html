@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Seraph Armory</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="google-sheets-config.js"></script>
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+    .rainbow-hover {
+      position: relative;
+      z-index: 0;
+      overflow: hidden;
+      border: 1px solid #D3AF37;
+      transition: all 0.3s ease-in-out;
+      background: #1a1a1a;
+    }
+    .rainbow-hover:hover {
+      background: #D3AF37;
+      color: #141414;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(211, 175, 55, 0.3);
+    }
+    @keyframes wave {
+      0% {
+        background-position: 0% 50%;
+      }
+      100% {
+        background-position: 100% 50%;
+      }
+    }
+    
+    .welcome-text {
+      opacity: 0;
+      transform: translateY(-50px);
+      animation: slideDownFadeIn 1s ease-out forwards;
+    }
+    
+    .armory-text {
+      opacity: 0;
+      transform: translateY(50px);
+      animation: slideUpFadeIn 1s ease-out 1s forwards;
+    }
+    
+    @keyframes slideDownFadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes slideUpFadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .weapon-image {
+      aspect-ratio: 16/7;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body class="text-white font-sans" style="background-color: #141414;">
+
+  <!-- Hero Section -->
+  <section class="h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat" id="hero-section" style="background-color: #141414;">
+    <div class="text-center bg-black bg-opacity-60 p-12 rounded-xl backdrop-blur-sm border border-opacity-20" style="border-color: #D3AF37;">
+      <h1 class="text-4xl md:text-6xl font-light mb-6 welcome-text">Welcome to</h1>
+      <h2 class="text-5xl md:text-7xl font-extrabold armory-text" style="color: #D3AF37;">The Seraph Armory</h2>
+    </div>
+  </section>
+
+<!-- Store Status Bar -->
+<section class="py-8 px-4 border-b border-opacity-20" style="background-color: #141414; border-color: #D3AF37;">
+  <div class="max-w-6xl mx-auto space-y-6 text-center">
+    <div class="text-xl font-light">
+      <span class="px-4 py-2 rounded-full font-medium text-sm text-black" style="background-color: #D3AF37;">
+        Store Status: OPEN
+      </span>
+    </div>
+
+    <div class="text-sm font-light text-gray-300">
+      <strong>Game Version:</strong> 4.3.0 &nbsp;&nbsp;
+      <strong>Prices Updated:</strong> <span id="price-update-date"></span>
+    </div>
+
+    <div class="text-lg space-x-6">
+      <span class="px-4 py-2 rounded-full font-medium text-sm text-black" style="background-color: #D3AF37;">
+        Selling: Yes
+      </span>
+      <span class="px-4 py-2 rounded-full font-medium text-sm text-black" style="background-color: #D3AF37;">
+        Buying: Yes
+      </span>
+    </div>
+
+    <div class="text-gray-300 text-sm pt-6">
+      <h3 class="text-xl font-medium mb-2" style="color: #D3AF37;">💖 Seraph Armory Operates out of: <strong>Seraphim Station</strong></h3>
+      <p class="font-light">Please contact me directly if you are looking to sell weapons, I will happily take them off your hands for a fair price.</p>
+    </div>
+  </div>
+</section>
+
+  <!-- Category Navigation -->
+  <nav class="sticky top-0 shadow-lg z-50 border-b border-opacity-20" style="background-color: #141414; border-color: #D3AF37;">
+    <ul class="flex justify-center space-x-8 py-6">
+      <li><a href="#bundles" class="font-light text-lg transition-colors duration-300" style="color: white;" onmouseover="this.style.color='#D3AF37'" onmouseout="this.style.color='white'">Bundles</a></li>
+      <li class="relative"><button onclick="toggleWeaponsDropdown()" class="font-light text-lg flex items-center transition-colors duration-300" style="color: white;" onmouseover="this.style.color='#D3AF37'" onmouseout="this.style.color='white'">
+          Weapons <span class="ml-2">▼</span>
+        </button>
+        <div id="weapons-dropdown" class="absolute top-full left-0 rounded-lg shadow-xl mt-2 py-3 min-w-52 hidden z-50 border border-opacity-20" style="background-color: #141414; border-color: #D3AF37;">
+          <a href="#special-weapons" class="block px-6 py-3 font-light transition-colors duration-300" style="color: white;" onmouseover="this.style.color='#D3AF37'" onmouseout="this.style.color='white'">Special Weapons</a>
+          <a href="#light-machine-guns" class="block px-6 py-3 font-light transition-colors duration-300" style="color: white;" onmouseover="this.style.color='#D3AF37'" onmouseout="this.style.color='white'">Light Machine Guns</a>
+          <a href="#sniper-rifles" class="block px-6 py-3 font-light transition-colors duration-300" style="color: white;" onmouseover="this.style.color='#D3AF37'" onmouseout="this.style.color='white'">Sniper Rifles</a>
+          <a href="#shotguns" class="block px-6 py-3 font-light transition-colors duration-300" style="color: white;" onmouseover="this.style.color='#D3AF37'" onmouseout="this.style.color='white'">Shotguns</a>
+          <a href="#assault-rifles" class="block px-6 py-3 font-light transition-colors duration-300" style="color: white;" onmouseover="this.style.color='#D3AF37'" onmouseout="this.style.color='white'">Assault Rifles</a>
+          <a href="#submachine-guns" class="block px-6 py-3 font-light transition-colors duration-300" style="color: white;" onmouseover="this.style.color='#D3AF37'" onmouseout="this.style.color='white'">Submachine Guns</a>
+          <a href="#handguns" class="block px-6 py-3 font-light transition-colors duration-300" style="color: white;" onmouseover="this.style.color='#D3AF37'" onmouseout="this.style.color='white'">Handguns</a>
+        </div>
+      </li>
+      <li><a href="#equipment" class="font-light text-lg transition-colors duration-300" style="color: white;" onmouseover="this.style.color='#D3AF37'" onmouseout="this.style.color='white'">Equipment</a></li>
+      <li><a href="order-status.html" class="font-light text-lg transition-colors duration-300" style="color: white;" onmouseover="this.style.color='#D3AF37'" onmouseout="this.style.color='white'">Order Status</a></li>
+      <li class="relative"><button onclick="toggleCart()" class="font-light text-lg flex items-center transition-colors duration-300" style="color: white;" onmouseover="this.style.color='#D3AF37'" onmouseout="this.style.color='white'">
+        Cart (<span id="cart-count">0</span>)
+      </button></li>
+    </ul>
+  </nav>
+
+  <!-- Global Search -->
+  <div class="py-6 px-4 border-b border-opacity-20" style="background-color: #141414; border-color: #D3AF37;">
+    <div class="max-w-4xl mx-auto">
+      <input type="text" id="weapon-search" placeholder="Search all items..." class="w-full max-w-lg mx-auto block p-4 rounded-lg text-white border border-opacity-30 focus:outline-none focus:border-opacity-100 transition-all duration-300 font-light" style="background-color: #1a1a1a; border-color: #D3AF37;" oninput="searchWeapons()" />
+    </div>
+  </div>
+
+  <!-- Sections -->
+  <section id="bundles" class="py-16 px-4" style="background-color: #141414;">
+    <h2 class="text-3xl font-light mb-8" style="color: #D3AF37;">Bundles</h2>
+    
+    <div class="space-y-6">
+      <!-- Bundle 1 Placeholder -->
+      <div class="rounded-lg overflow-hidden shadow-lg mb-8 border border-opacity-20 transition-all duration-300 hover:shadow-xl hover:border-opacity-40" style="background-color: #1a1a1a; border-color: #D3AF37;">
+        <div class="flex border-b border-opacity-10" style="border-color: #D3AF37;">
+          <img src="https://i.imgur.com/J8lNUvb.jpeg" alt="Standard Medrunner Loadout" class="w-1/3 object-cover cursor-pointer" loading="lazy" onclick="openImage(this.src)" />
+          <div class="p-8 w-2/3">
+            <h3 class="text-2xl font-light mb-2" style="color: #D3AF37;">Standard Medrunner Loadout Bundle</h3>
+            <p class="text-sm font-light text-gray-400 mb-4">Complete MedRunner loadout for any alert</p>
+            
+            <div class="mb-4">
+              <span class="text-sm font-medium px-3 py-1 rounded-full" style="background-color: #00aa00; color: white;">
+                In Stock
+              </span>
+              <span class="text-sm font-light text-gray-300 ml-2">25+ remaining in stock</span>
+            </div>
+            
+            <div class="mb-6">
+              <span class="text-xl font-light text-white">Free</span>
+              <span class="text-sm font-light text-gray-400 ml-2">- 26,000 aUEC Value!</span>
+            </div>
+            
+            <div class="flex space-x-4 mb-6">
+              <button class="px-4 py-2 text-sm font-light border border-opacity-30 rounded transition-all duration-300 hover:border-opacity-100" style="border-color: #D3AF37; color: white;" onmouseover="this.style.backgroundColor='#D3AF37'; this.style.color='#141414'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='white'" onclick="toggleDetails(this)">Details</button>
+            </div>
+            
+            <div class="space-y-4 mb-6">
+              <div class="flex space-x-4">
+                <div class="flex-1">
+                  <label class="block text-sm font-light mb-2" style="color: #D3AF37;">Variant:</label>
+                  <select class="variant-select w-full p-2 rounded text-white border border-opacity-30 focus:border-opacity-100 transition-all duration-300 font-light focus:outline-none" style="background-color: #1a1a1a; border-color: #D3AF37;">
+                    <option value="Default - Free">Default - Free</option>
+                  </select>
+                </div>
+                <div class="w-24">
+                  <label class="block text-sm font-light mb-2" style="color: #D3AF37;">Qty:</label>
+                  <input type="number" class="quantity-input w-full p-2 rounded text-white border border-opacity-30 focus:border-opacity-100 transition-all duration-300 font-light focus:outline-none" style="background-color: #1a1a1a; border-color: #D3AF37;" value="1" min="1" max="50">
+                </div>
+              </div>
+            </div>
+            <button class="w-full py-3 text-sm font-medium rounded transition-all duration-300" style="background-color: #D3AF37; color: #141414;" onmouseover="this.style.backgroundColor='#b8941f'" onmouseout="this.style.backgroundColor='#D3AF37'" onclick="addBundleToCart('Standard Medrunner Loadout', 'Free', this)">Add to Cart</button>
+            
+            <div class="details hidden mt-6 pt-6 border-t border-opacity-10 text-sm font-light space-y-2" style="border-color: #D3AF37;">
+              <p style="color: #D3AF37;" class="font-medium mb-3">Bundle Contents:</p>
+              <div class="text-gray-300 space-y-3">
+                <div>
+                  <p class="font-medium text-white mb-1">Weapons:</p>
+                  <p>• 1x P4-AR "Boneyard" Rifle</p>
+                  <p>• 10x P4-AR Magazine</p>
+                  <p>• 1x S-38 Pistol</p>
+                  <p>• 4x S-38 Magazine</p>
+                  <p>• 3x MK-4 Frag Grenade</p>
+                </div>
+                <div>
+                  <p class="font-medium text-white mb-1">Armor:</p>
+                  <p>• 1x Balor HCH Helmet White</p>
+                  <p>• 1x ADP Core Red</p>
+                  <p>• 1x ADP Arms White</p>
+                  <p>• 1x ADP Legs White</p>
+                  <p>• 1x TCS-4 Undersuit Arctic</p>
+                  <p>• 1x MacFlex Backpack White</p>
+                </div>
+                <div>
+                  <p class="font-medium text-white mb-1">Equipment:</p>
+                  <p>• 1x ParaMed Medical Device</p>
+                  <p>• 1x ParaMed Refill</p>
+                  <p>• 1x Pyro RYT Multi-Tool</p>
+                  <p>• 1x TruHold Tractor Beam Attachment</p>
+                  <p>• 2x MedPen (Hemozal)</p>
+                  <p>• 1x QuikFlare</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bundle 2 -->
+      <div class="rounded-lg overflow-hidden shadow-lg mb-8 border border-opacity-20 transition-all duration-300 hover:shadow-xl hover:border-opacity-40" style="background-color: #1a1a1a; border-color: #D3AF37;">
+        <div class="flex border-b border-opacity-10" style="border-color: #D3AF37;">
+          <img src="https://i.imgur.com/L2oDxlC.png" alt="Specialist Medrunner Loadout" class="w-1/3 object-cover cursor-pointer" loading="lazy" onclick="openImage(this.src)" />
+          <div class="p-8 w-2/3">
+            <h3 class="text-2xl font-light mb-2" style="color: #D3AF37;">Specialist Medrunner Loadouts</h3>
+            <p class="text-sm font-light text-gray-400 mb-4">For MedRunners looking to up their game</p>
+            
+            <div class="mb-4">
+              <span class="text-sm font-medium px-3 py-1 rounded-full" style="background-color: #00aa00; color: white;">
+                In Stock
+              </span>
+              <span class="text-sm font-light text-gray-300 ml-2">10+ remaining in stock</span>
+            </div>
+            
+            <div class="mb-6">
+              <span class="text-xl font-light text-white">28,500 - 325,000 aUEC</span>
+              <span class="text-sm font-light text-gray-400 ml-2"> Depending on loadout</span>
+            </div>
+            
+            <div class="flex space-x-4 mb-6">
+              <button class="px-4 py-2 text-sm font-light border border-opacity-30 rounded transition-all duration-300 hover:border-opacity-100" style="border-color: #D3AF37; color: white;" onmouseover="this.style.backgroundColor='#D3AF37'; this.style.color='#141414'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='white'" onclick="toggleDetails(this)">Details</button>
+            </div>
+            
+            <div class="space-y-4 mb-6">
+              <div class="flex space-x-4">
+                <div class="flex-1">
+                  <label class="block text-sm font-light mb-2" style="color: #D3AF37;">Variant:</label>
+                  <select class="variant-select w-full p-2 rounded text-white border border-opacity-30 focus:border-opacity-100 transition-all duration-300 font-light focus:outline-none" style="background-color: #1a1a1a; border-color: #D3AF37;">
+                    <option value="Scout - 28,500 aUEC">Scout - 28,500 aUEC</option>
+                    <option value="Shotgun - 31,000 aUEC">Shotgun - 31,000 aUEC</option>
+                    <option value="Heavy - 45,000 aUEC">Heavy - 45,000 aUEC</option>
+                    <option value="Marksman - 200,000 aUEC">Marksman - 200,000 aUEC</option>
+                    <option value="Sniper - 325,000 aUEC">Sniper - 325,000 aUEC</option>
+                  </select>
+                </div>
+                <div class="w-24">
+                  <label class="block text-sm font-light mb-2" style="color: #D3AF37;">Qty:</label>
+                  <input type="number" class="quantity-input w-full p-2 rounded text-white border border-opacity-30 focus:border-opacity-100 transition-all duration-300 font-light focus:outline-none" style="background-color: #1a1a1a; border-color: #D3AF37;" value="1" min="1" max="50">
+                </div>
+              </div>
+            </div>
+            <button class="w-full py-3 text-sm font-medium rounded transition-all duration-300" style="background-color: #D3AF37; color: #141414;" onmouseover="this.style.backgroundColor='#b8941f'" onmouseout="this.style.backgroundColor='#D3AF37'" onclick="addBundleToCart('Specialist Medrunner Loadout Bundle', '525,000 aUEC', this)">Add to Cart</button>
+            
+            <div class="details hidden mt-6 pt-6 border-t border-opacity-10 text-sm font-light space-y-2" style="border-color: #D3AF37;">
+              <p style="color: #D3AF37;" class="font-medium mb-3">Bundle Contents:</p>
+              <div class="text-gray-300 space-y-3">
+                <div>
+                  <p class="font-medium text-white mb-1">Weapons (varies by variant):</p>
+                  <p>• 1x Primary Weapon (P8-SC / BR-2 / FS-9 / P8-AR / P6-LR)</p>
+                  <p>• 10x Primary Weapon Magazine</p>
+                  <p>• 1x S-38 Pistol</p>
+                  <p>• 4x S-38 Magazine</p>
+                  <p>• 3x MK-4 Frag Grenade</p>
+                </div>
+                <div>
+                  <p class="font-medium text-white mb-1">Armor:</p>
+                  <p>• 1x Balor HCH Helmet White</p>
+                  <p>• 1x ADP Core Red</p>
+                  <p>• 1x ADP Arms White</p>
+                  <p>• 1x ADP Legs White</p>
+                  <p>• 1x TCS-4 Undersuit Arctic</p>
+                  <p>• 1x MacFlex Backpack White</p>
+                </div>
+                <div>
+                  <p class="font-medium text-white mb-1">Equipment:</p>
+                  <p>• 1x ParaMed Medical Device</p>
+                  <p>• 1x ParaMed Refill</p>
+                  <p>• 1x Pyro RYT Multi-Tool</p>
+                  <p>• 1x TruHold Tractor Beam Attachment</p>
+                  <p>• 2x MedPen (Hemozal)</p>
+                  <p>• 1x QuikFlare</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="weapons" class="py-16 px-4" style="background-color: #141414;">
+    <h2 class="text-3xl font-light mb-8" style="color: #D3AF37;">Weapons</h2>
+    
+    <!-- Special Weapons -->
+    <div id="special-weapons" class="mb-12">
+      <h3 class="text-2xl font-light mb-6 border-b border-opacity-20 pb-4" style="color: #D3AF37; border-color: #D3AF37;">Special Weapons</h3>
+      <div id="special-weapons-grid" class="space-y-6"></div>
+    </div>
+
+    <!-- Light Machine Guns -->
+    <div id="light-machine-guns" class="mb-12">
+      <h3 class="text-2xl font-light mb-6 border-b border-opacity-20 pb-4" style="color: #D3AF37; border-color: #D3AF37;">Light Machine Guns</h3>
+      <div id="light-machine-guns-grid" class="space-y-6"></div>
+    </div>
+
+    <!-- Sniper Rifles -->
+    <div id="sniper-rifles" class="mb-12">
+      <h3 class="text-2xl font-light mb-6 border-b border-opacity-20 pb-4" style="color: #D3AF37; border-color: #D3AF37;">Sniper Rifles</h3>
+      <div id="sniper-rifles-grid" class="space-y-6"></div>
+    </div>
+
+    <!-- Shotguns -->
+    <div id="shotguns" class="mb-12">
+      <h3 class="text-2xl font-light mb-6 border-b border-opacity-20 pb-4" style="color: #D3AF37; border-color: #D3AF37;">Shotguns</h3>
+      <div id="shotguns-grid" class="space-y-6"></div>
+    </div>
+
+    <!-- Assault Rifles -->
+    <div id="assault-rifles" class="mb-12">
+      <h3 class="text-2xl font-light mb-6 border-b border-opacity-20 pb-4" style="color: #D3AF37; border-color: #D3AF37;">Assault Rifles</h3>
+      <div id="assault-rifles-grid" class="space-y-6"></div>
+    </div>
+
+    <!-- Submachine Guns -->
+    <div id="submachine-guns" class="mb-12">
+      <h3 class="text-2xl font-light mb-6 border-b border-opacity-20 pb-4" style="color: #D3AF37; border-color: #D3AF37;">Submachine Guns</h3>
+      <div id="submachine-guns-grid" class="space-y-6"></div>
+    </div>
+
+    <!-- Handguns -->
+    <div id="handguns" class="mb-12">
+      <h3 class="text-2xl font-light mb-6 border-b border-opacity-20 pb-4" style="color: #D3AF37; border-color: #D3AF37;">Handguns</h3>
+      <div id="handguns-grid" class="space-y-6"></div>
+    </div>
+
+    <script>
+      const weapons = [
+        // Special Weapons
+        ["Scourge Railgun", "https://media.starcitizen.tools/thumb/6/65/Scourge_-_On_crate_with_3_clips_-_Flat.jpg/2560px-Scourge_-_On_crate_with_3_clips_-_Flat.jpg.webp", "400,000 aUEC", 1, "Ballistic", "13 Round", ".937", "70rpm", "200m", ["Black - 410,000 aUEC", "Desert - 415,000 aUEC"], "Apocalypse Arms Scourge Railgun", "Special Weapons"],
+        ["Animus Missile Launcher", "https://scwiki.hu/images/thumb/7/7e/Apar_ML_Shot_002_11Dec19-Min.jpg/2560px-Apar_ML_Shot_002_11Dec19-Min.jpg", "300,000 aUEC", 1, "Missile", "3 Round", "40mm", "300rpm", "2000m", ["Default - 300,000 aUEC"], "Apocalypse Arms Animus Missile Launcher", "Special Weapons"],
+        ["GP-33 MOD Grenade Launcher", "https://scwiki.hu/images/thumb/2/29/Gp_33_Black.jpg/2560px-Gp_33_Black.jpg", "300,000 aUEC", 1, "Ballistic", "6 Round", "40mm", "60rpm", "80m", ["Default - 300,000 aUEC", "Umber - 310,000 aUEC"], "Behring Applied Technology GP-33 MOD Grenade Launcher", "Special Weapons"],
+        
+        // Light Machine Guns
+        ["FS-9 LMG", "https://scwiki.hu/images/thumb/b/bd/FS-9_-_On_crate_with_extra_magazine.jpg/2560px-FS-9_-_On_crate_with_extra_magazine.jpg", "20,000 aUEC", 50, "Ballistic", "75 Round", "5mm", "800rpm", "40m", ["Default - 20,000 aUEC", "Evergreen - 22,000 aUEC", "Stoneface - 22,000 aUEC"], "Behring Applied Technology FS-9 Light Machine Gun", "Light Machine Guns"],
+        ["F55 LMG", "https://scwiki.hu/images/thumb/1/1d/F55_-_x2_with_2_clips_-_Flat.jpg/2560px-F55_-_x2_with_2_clips_-_Flat.jpg", "300,000 aUEC", 10, "Ballistic", "150 Round", "5mm", "1200rpm", "30m", ["Default - 300,000 aUEC"], "Gemini F55 Light Machine Gun", "Light Machine Guns"],
+        ["Demeco LMG", "https://i.imgur.com/wfD6k44.jpeg", "20,000 aUEC", 50, "Laser", "100 Round", "X", "400rpm", "40m", ["Default - 20,000 aUEC"], "Klaus & Werner Demeco Light Machine Gun", "Light Machine Guns"],
+        
+        // Sniper Rifles
+        ["A03 Sniper Rifle", "https://preview.redd.it/8vykncwhjhf51.png?width=1080&crop=smart&auto=webp&s=4d3621b4daece2c72541fb7c936f6fcfedf185d8", "150,000 aUEC", 16, "Ballistic", "15 Round", "7mm", "90rpm", "80m", ["Default - 150,000 aUEC", "Canuto - 155,000 aUEC", "Lodestone - 155,000 aUEC", "Scorched - 160,000 aUEC"], "Gemini A03 Sniper Rifle", "Sniper Rifles"],
+        ["Arrowhead Sniper Rifle", "https://scwiki.hu/images/thumb/5/51/ArrowheadPathfinder.jpg/2560px-ArrowheadPathfinder.jpg", "100,000 aUEC", 6, "Laser", "10 Round", "X", "70rpm", "100m", ["Default - 100,000 aUEC", "Midnight - 105,000 aUEC", "Lamplighter - 105,000 aUEC"], "Klaus & Werner Arrowhead Sniper Rifle", "Sniper Rifles"],
+        ["P6-LR Sniper Rifle", "https://scwiki.hu/images/thumb/4/4d/P6LR_-_Left_side_against_dark_background.jpg/2560px-P6LR_-_Left_side_against_dark_background.jpg", "300,000 aUEC", 12, "Ballistic", "8 Round", ".50", "90rpm", "120m", ["Default - 300,000 aUEC"], "Behring Applied Technology P6-LR Sniper Rifle", "Sniper Rifles"],
+        ["Scalpel Sniper Rifle", "https://scwiki.hu/images/thumb/7/7b/Scalpel_-_On_gun_crate_-_Back_Right.jpg/2560px-Scalpel_-_On_gun_crate_-_Back_Right.jpg", "25,000 aUEC", 50, "Ballistic", "8 Round", "7.62mm", "600/60rpm", "120m", ["Default - 25,000 aUEC"], "Kastak Arms Scalpel Sniper Rifle", "Sniper Rifles"],
+        ["Atzkav Sniper Rifle", "https://scwiki.hu/images/thumb/5/57/Atzkav_-_Flat_with_Ammo_x_3.jpg/2560px-Atzkav_-_Flat_with_Ammo_x_3.jpg", "40,000 aUEC", 50, "Electron", "5 Round", "X", "30rpm", "150m", ["Default - 40,000 aUEC"], "Lightning Bolt Co. Atzkav Sniper Rifle", "Sniper Rifles"],
+        
+        // Shotguns
+        ["BR-2 Shotgun", "https://scwiki.hu/images/b/b0/BR2_Ballistic_Shotgun.png", "6,000 aUEC", 50, "Ballistic", "12 Round", "Shell", "90rpm", "12m", ["Default - 6,000 aUEC"], "Behring Applied Technology BR-2 Shotgun", "Shotguns"],
+        ["Deadrig Shotgun", "https://media.starcitizen.tools/thumb/8/80/Deadrig_Shotgun_-_Contrast_adjusted_and_Cropped.jpg/2560px-Deadrig_Shotgun_-_Contrast_adjusted_and_Cropped.jpg.webp", "200,000 aUEC", 4, "Ballistic", "8 Round", "Shell", "50rpm", "7m", ["Default - 200,000 aUEC"], "Unknown Arms Deadrig Shotgun", "Shotguns"],
+        ["Prism Shotgun", "https://star-hangar.com/media/catalog/product/cache/1c6b3665116ed742072997bd2095a829/1/7/1750435010_prism_hazard_laser_shotgun.jpg", "250,000 aUEC", 4, "Laser", "12 Round", "Laser", "50rpm", "10m", ["Default - 200,000 aUEC"], "Verified Offworld Laser Technologies Prism Shotgun", "Shotguns"],
+        ["Devastator Shotgun", "https://scwiki.hu/images/thumb/7/73/Devastator_-_with_2_clips_-_Flat.jpg/2560px-Devastator_-_with_2_clips_-_Flat.jpg", "6,000 aUEC", 50, "Energy", "12 Round", "X", "60rpm", "14m", ["Default - 6,000 aUEC"], "Kastak Arms Devastator Shotgun", "Shotguns"],
+        ["Ravager-212 Twin Shotgun", "https://scwiki.hu/images/d/d0/Ravager_-_On_dark_background_-_Leftside.png", "6,000 aUEC", 50, "Ballistic", "16 Round", "Shell", "800rpm", "12m", ["Default - 6,000 aUEC"], "Kastak Arms Ravager-212 Twin Shotgun", "Shotguns"],
+        ["R97 Shotgun", "https://scwiki.hu/images/thumb/b/b0/R97_-_x2_with_2_clips_-_Flat.jpg/2560px-R97_-_x2_with_2_clips_-_Flat.jpg", "6,000 aUEC", 50, "Energy", "18 Round", "X", "150rpm", "12m", ["Default - 6,000 aUEC", "Kismet - 6,500 aUEC"], "Gemini R97 Shotgun", "Shotguns"],
+        
+        // Assault Rifles
+        ["Gallant Rifle", "https://i.imgur.com/o9HMg2z.jpeg", "5,500 aUEC", 50, "Laser", "60 Round", "X", "451rpm", "50m", ["Default - 5,500 aUEC", "Boneyard - 6,000 aUEC", "Desert Shadow - 6,000 aUEC", "Midnight - 6,000 aUEC", "Nightstalker - 6,000 aUEC", "Stormfall - 6,000 aUEC", "Warhawk - 6,000 aUEC"], "Klaus & Werner Gallant Assault Rifle", "Assault Rifles"],
+        ["Karna Rifle", "https://media.starcitizen.tools/thumb/c/c2/Karna_Fate_hanging_on_metal_fence_-_Cropped.png/2560px-Karna_Fate_hanging_on_metal_fence_-_Cropped.png.webp", "5,000 aUEC", 50, "Plasma", "30 Round", "X", "500rpm", "50m", ["Default - 5,000 aUEC"], "Kastak Arms Karna Assault Rifle", "Assault Rifles"],
+        ["P4-AR Rifle", "https://scwiki.hu/images/thumb/2/23/P4-AR_-_with_clip_bullets_scope_and_2_granades_-_Flat.jpg/2560px-P4-AR_-_with_clip_bullets_scope_and_2_granades_-_Flat.jpg", "5,500 aUEC", 50, "Ballistic", "30 Round", "5.56mm", "550rpm", "50m", ["Default - 5,500 aUEC", "Boneyard - 6,000 aUEC", "Desert Shadow - 6,000 aUEC", "Nightstalker - 6,000 aUEC", "Warhawk - 6,000 aUEC"], "Behring Applied Technology P4-AR Assault Rifle", "Assault Rifles"],
+        ["P8-AR Marksman Rifle", "https://media.starcitizen.tools/7/75/P8-AR_with_mags_on_flat_grey_surface_-_Wear_%26_Tear.png", "500,000 aUEC", 0, "Ballistic", "15 Round", "45.", "235rpm", "50m", ["Default - 500,000 aUEC"], "Behring Applied Technology P8-AR Marksman Rifle", "Assault Rifles"],
+        ["S71 Rifle", "https://media.starcitizen.tools/thumb/2/2c/Gmni-st71.png/2880px-Gmni-st71.png.webp", "100,000 aUEC", 0, "Ballistic", "30 Round", "5mm", "400rpm", "50m", ["Default - 100,000 aUEC"], "Gemini S71 Assault Rifle", "Assault Rifles"],
+        
+        // Submachine Guns
+        ["P8-SC SMG", "https://media.starcitizen.tools/f/fe/StarCitizen-Preview_BEHR_P8SC_01-pcgh.jpg", "3,300 aUEC", 50, "Ballistic", "45 Round", "10mm", "800rpm", "30m", ["Default - 3,300 aUEC", "Boneyard - 3,800 aUEC", "Desert Shadow - 3,800 aUEC", "Midnight - 3,800 aUEC", "Nightstalker - 3,800 aUEC", "Stormfall - 3,800 aUEC", "Warhawk - 3,800 aUEC"], "Behring Applied Technology P8-SC Submachine Gun", "Submachine Guns"],
+        ["Lumin V SMG", "https://media.starcitizen.tools/thumb/f/f6/Lumin_V_-_with_clip_on_grey_background_-_Flat.jpg/2560px-Lumin_V_-_with_clip_on_grey_background_-_Flat.jpg.webp", "2,900 aUEC", 50, "Laser", "45 Round", "X", "1125rpm", "25m", ["Default - 2,900 aUEC"], "Klaus & Werner Lumin V Submachine Gun", "Submachine Guns"],
+        ["C54 SMG", "https://media.starcitizen.tools/thumb/7/75/Gemini_-_C54.jpg/2560px-Gemini_-_C54.jpg.webp", "3,200 aUEC", 50, "Ballistic", "50 Round", "10mm", "1100rpm", "35m", ["Default - 3,200 aUEC", "Luminalia - 3,700 aUEC"], "Gemini C54 Submachine Gun", "Submachine Guns"],
+        ["Custodian SMG", "https://media.starcitizen.tools/thumb/a/a8/Custodian_-_with_x4_clips_-_Flat.jpg/2560px-Custodian_-_with_x4_clips_-_Flat.jpg.webp", "2,900 aUEC", 50, "Ballistic", "13 Round", "10mm", "400rpm", "30m", ["Default - 2,900 aUEC", "Boneyard - 3,400 aUEC", "Desert Shadow - 3,400 aUEC", "Midnight - 3,400 aUEC", "Nightstalker - 3,400 aUEC", "Warhawk - 3,400 aUEC"], "Kastak Arms Custodian Submachine Gun", "Submachine Guns"],
+        
+        // Handguns
+        ["LH86 Pistol", "https://i.imgur.com/9UYAxkw.jpeg", "1,000 aUEC", 50, "Ballistic", "13 Round", "10mm", "400rpm", "30m", ["Default - 1,000 aUEC", "Alt Variants - 1,200 aUEC"], "Gemini LH86 Pistol", "Handguns"],
+        ["S-38 Pistol", "https://media.starcitizen.tools/thumb/8/82/S38_-_Lying_flat_with_clip.jpg/2560px-S38_-_Lying_flat_with_clip.jpg.webp", "1,000 aUEC", 50, "Ballistic", "15 Round", "10mm", "450rpm", "25m", ["Default - 1,000 aUEC"], "Behring Applied Technology S-38 Pistol", "Handguns"],
+        ["Arclight Pistol", "https://media.starcitizen.tools/thumb/5/52/Arclight_II_-_with_2_clips_-_flat.jpg/2560px-Arclight_II_-_with_2_clips_-_flat.jpg.webp", "1,000 aUEC", 50, "Laser", "60 Round", "X", "300rpm", "30m", ["Default - 1,000 aUEC", "Alt Variants - 1,200 aUEC"], "Klaus & Werner Arclight Pistol", "Handguns"],
+        ["Salvo Frag Pistol", "https://media.starcitizen.tools/thumb/b/b5/Salvo_Frag_-_Lying_flat_with_clip.jpg/2880px-Salvo_Frag_-_Lying_flat_with_clip.jpg.webp", "18,000 aUEC", 0, "Ballistic", "8 Round", ".50", "170rpm", "80m", ["Default - 18,000 aUEC"], "Hedeby Gunworks Salvo Frag Pistol", "Handguns"],
+        ["Yubarev Pistol", "https://media.starcitizen.tools/thumb/4/4f/Yubarev_-_Deadeye_Skin_Flat.jpg/2560px-Yubarev_-_Deadeye_Skin_Flat.jpg.webp", "15,000 aUEC", 1, "Electron", "10 Round", "X", "350rpm", "35m", ["Default - 15,000 aUEC"], "Lightning Bolt Co. Yubarev Pistol", "Handguns"],
+        ["Coda Pistol", "https://media.starcitizen.tools/6/67/Coda_pistols_x2_lying_on_creat_with_mags_and_bullets.png", "1,200 aUEC", 50, "Ballistic", "6 Round", ".50", "180rpm", "100m", ["Default - 1,200 aUEC"], "Kastak Arms Coda Pistol", "Handguns"]
+      ];
+    
+      const categoryGrids = {
+        'Special Weapons': document.getElementById('special-weapons-grid'),
+        'Light Machine Guns': document.getElementById('light-machine-guns-grid'),
+        'Sniper Rifles': document.getElementById('sniper-rifles-grid'),
+        'Shotguns': document.getElementById('shotguns-grid'),
+        'Assault Rifles': document.getElementById('assault-rifles-grid'),
+        'Submachine Guns': document.getElementById('submachine-guns-grid'),
+        'Handguns': document.getElementById('handguns-grid')
+      };
+
+      weapons.forEach(([name, image, price, stock, damage, mag, cal, rate, range, variants, fullName, category]) => {
+        const card = document.createElement('div');
+        card.className = "rounded-lg overflow-hidden shadow-lg mb-8 border border-opacity-20 transition-all duration-300 hover:shadow-xl hover:border-opacity-40";
+        card.style.backgroundColor = "#1a1a1a";
+        card.style.borderColor = "#D3AF37";
+        
+        let stockLabel = '';
+        let stockColor = '';
+        let stockTextColor = 'white';
+        
+        if (stock === 0) {
+          stockLabel = 'No Stock';
+          stockColor = '#aa0000';
+        } else if (stock >= 1 && stock <= 4) {
+          stockLabel = 'Low Stock';
+          stockColor = '#dfde01';
+          stockTextColor = 'black';
+        } else {
+          stockLabel = 'In Stock';
+          stockColor = '#00aa00';
+        }
+        
+        card.innerHTML = `
+          <div class="flex border-b border-opacity-10" style="border-color: #D3AF37;">
+            <img src="${image}" alt="${name}" class="w-1/3 weapon-image cursor-pointer" loading="lazy" onclick="openImage(this.src)" />
+            <div class="p-8 w-2/3">
+              <h3 class="text-2xl font-light mb-2" style="color: #D3AF37;">${name}</h3>
+              <p class="text-sm font-light text-gray-400 mb-4">${fullName}</p>
+              
+              <div class="mb-4">
+                <span class="text-sm font-medium px-3 py-1 rounded-full" style="background-color: ${stockColor}; color: ${stockTextColor};">
+                  ${stockLabel}
+                </span>
+                ${stock > 0 ? `<span class="text-sm font-light text-gray-300 ml-2">${stock} remaining in stock</span>` : ''}
+              </div>
+              
+              <div class="mb-6">
+                <span class="text-xl font-light text-white">${price}</span>
+              </div>
+              
+              <div class="flex space-x-4 mb-6">
+                <button class="px-4 py-2 text-sm font-light border border-opacity-30 rounded transition-all duration-300 hover:border-opacity-100" style="border-color: #D3AF37; color: white;" onmouseover="this.style.backgroundColor='#D3AF37'; this.style.color='#141414'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='white'" onclick="toggleDetails(this)">Details</button>
+                ${variants.length > 1 ? `
+                <button class="px-4 py-2 text-sm font-light border border-opacity-30 rounded transition-all duration-300 hover:border-opacity-100" style="border-color: #D3AF37; color: white;" onmouseover="this.style.backgroundColor='#D3AF37'; this.style.color='#141414'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='white'" onclick="toggleVariants(this)">Variants</button>
+                ` : ''}
+              </div>
+              
+              ${stock > 0 ? `
+              <div class="space-y-4 mb-6">
+                <div class="flex space-x-4">
+                  <div class="flex-1">
+                    <label class="block text-sm font-light mb-2" style="color: #D3AF37;">Variant:</label>
+                    <select class="variant-select w-full p-2 rounded text-white border border-opacity-30 focus:border-opacity-100 transition-all duration-300 font-light focus:outline-none" style="background-color: #1a1a1a; border-color: #D3AF37;">
+                      ${variants.map(v => `<option value="${v}">${v}</option>`).join('')}
+                    </select>
+                  </div>
+                  <div class="w-24">
+                    <label class="block text-sm font-light mb-2" style="color: #D3AF37;">Qty:</label>
+                    <input type="number" class="quantity-input w-full p-2 rounded text-white border border-opacity-30 focus:border-opacity-100 transition-all duration-300 font-light focus:outline-none" style="background-color: #1a1a1a; border-color: #D3AF37;" value="1" min="1" max="${stock}">
+                  </div>
+                </div>
+              </div>
+              <button class="w-full py-3 text-sm font-medium rounded transition-all duration-300" style="background-color: #D3AF37; color: #141414;" onmouseover="this.style.backgroundColor='#b8941f'" onmouseout="this.style.backgroundColor='#D3AF37'" onclick="addToCart('${name}', '${fullName}', this)">Add to Cart</button>
+              ` : `
+              <button class="w-full py-3 text-sm font-medium rounded transition-all duration-300 bg-gray-600 text-gray-400 cursor-not-allowed" disabled>Out of Stock</button>
+              `}
+              
+              <div class="details hidden mt-6 pt-6 border-t border-opacity-10 text-sm font-light space-y-2" style="border-color: #D3AF37;">
+                <p style="color: #D3AF37;" class="font-medium mb-3">Weapon Details:</p>
+                <div class="grid grid-cols-2 gap-4 text-gray-300">
+                  <p><strong>Damage Type:</strong> ${damage}</p>
+                  <p><strong>Magazine:</strong> ${mag}</p>
+                  <p><strong>Caliber:</strong> ${cal}</p>
+                  <p><strong>Rate of Fire:</strong> ${rate}</p>
+                  <p><strong>Range:</strong> ${range}</p>
+                </div>
+              </div>
+              
+              <div class="variants hidden mt-6 pt-6 border-t border-opacity-10 text-sm font-light space-y-2" style="border-color: #D3AF37;">
+                <p style="color: #D3AF37;" class="font-medium mb-3">Available Variants:</p>
+                ${variants.map(v => `<p class="text-gray-300">${v}</p>`).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+        
+        const targetGrid = categoryGrids[category];
+        if (targetGrid) {
+          targetGrid.appendChild(card);
+        }
+      });
+    </script>
+  </section>
+
+  <section id="equipment" class="py-16 px-4" style="background-color: #141414;">
+    <h2 class="text-3xl font-light mb-8" style="color: #D3AF37;">Equipment</h2>
+
+    <div class="space-y-6">
+      <!-- Tigersclaw -->
+      <div class="rounded-lg overflow-hidden shadow-lg mb-8 border border-opacity-20 transition-all duration-300 hover:shadow-xl hover:border-opacity-40" style="background-color: #1a1a1a; border-color: #D3AF37;">
+        <div class="flex border-b border-opacity-10" style="border-color: #D3AF37;">
+          <img src="https://media.starcitizen.tools/7/70/Cryptokey-Tigersclaw.jpg" alt="Tigersclaw" class="w-1/3 object-cover cursor-pointer" loading="lazy" onclick="openImage(this.src)" />
+          <div class="p-8 w-2/3">
+            <h3 class="text-2xl font-light mb-2" style="color: #D3AF37;">Tigersclaw</h3>
+            <p class="text-sm font-light text-gray-400 mb-4">Blue Triangle Cryptokey</p>
+
+            <div class="mb-4">
+              <span class="text-sm font-medium px-3 py-1 rounded-full" style="background-color: #00aa00; color: white;">
+                In Stock
+              </span>
+              <span class="text-sm font-light text-gray-300 ml-2">50+ remaining in stock</span>
+            </div>
+
+            <div class="mb-6">
+              <span class="text-xl font-light text-white">5,000 aUEC</span>
+            </div>
+
+            <div class="flex space-x-4 mb-6">
+              <button class="px-4 py-2 text-sm font-light border border-opacity-30 rounded transition-all duration-300 hover:border-opacity-100" style="border-color: #D3AF37; color: white;" onmouseover="this.style.backgroundColor='#D3AF37'; this.style.color='#141414'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='white'" onclick="toggleDetails(this)">Details</button>
+            </div>
+
+            <div class="space-y-4 mb-6">
+              <div class="flex space-x-4">
+                <div class="flex-1">
+                  <label class="block text-sm font-light mb-2" style="color: #D3AF37;">Variant:</label>
+                  <select class="variant-select w-full p-2 rounded text-white border border-opacity-30 focus:border-opacity-100 transition-all duration-300 font-light focus:outline-none" style="background-color: #1a1a1a; border-color: #D3AF37;">
+                    <option value="Default - 5,000 aUEC">Default - 5,000 aUEC</option>
+                  </select>
+                </div>
+                <div class="w-24">
+                  <label class="block text-sm font-light mb-2" style="color: #D3AF37;">Qty:</label>
+                  <input type="number" class="quantity-input w-full p-2 rounded text-white border border-opacity-30 focus:border-opacity-100 transition-all duration-300 font-light focus:outline-none" style="background-color: #1a1a1a; border-color: #D3AF37;" value="1" min="1" max="50">
+                </div>
+              </div>
+            </div>
+            <button class="w-full py-3 text-sm font-medium rounded transition-all duration-300" style="background-color: #D3AF37; color: #141414;" onmouseover="this.style.backgroundColor='#b8941f'" onmouseout="this.style.backgroundColor='#D3AF37'" onclick="addToCart('Tigersclaw', 'Blue Triangle Cryptokey', this)">Add to Cart</button>
+
+            <div class="details hidden mt-6 pt-6 border-t border-opacity-10 text-sm font-light space-y-2" style="border-color: #D3AF37;">
+              <p style="color: #D3AF37;" class="font-medium mb-3">Equipment Details:</p>
+              <div class="text-gray-300 space-y-2">
+                <p><strong>Duration Multiplier:</strong> 75%</p>
+                <p><strong>Error Chance:</strong> 50%</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pyro RYT Multi-Tool -->
+      <div class="rounded-lg overflow-hidden shadow-lg mb-8 border border-opacity-20 transition-all duration-300 hover:shadow-xl hover:border-opacity-40" style="background-color: #1a1a1a; border-color: #D3AF37;">
+        <div class="flex border-b border-opacity-10" style="border-color: #D3AF37;">
+          <img src="https://media.starcitizen.tools/9/91/Pyro_RYT_-_x2_on_black_background.png" alt="Pyro RYT Multi-Tool" class="w-1/3 object-cover cursor-pointer" loading="lazy" onclick="openImage(this.src)" />
+          <div class="p-8 w-2/3">
+            <h3 class="text-2xl font-light mb-2" style="color: #D3AF37;">Pyro RYT Multi-Tool</h3>
+            <p class="text-sm font-light text-gray-400 mb-4">Greycat Pyro RYT Multi-Tool</p>
+
+            <div class="mb-4">
+              <span class="text-sm font-medium px-3 py-1 rounded-full" style="background-color: #dfde01; color: black;">
+                Low Stock
+              </span>
+              <span class="text-sm font-light text-gray-300 ml-2">5 remaining in stock</span>
+            </div>
+
+            <div class="mb-6">
+              <span class="text-xl font-light text-white">Per Variant</span>
+            </div>
+
+            <div class="flex space-x-4 mb-6">
+              <button class="px-4 py-2 text-sm font-light border border-opacity-30 rounded transition-all duration-300 hover:border-opacity-100" style="border-color: #D3AF37; color: white;" onmouseover="this.style.backgroundColor='#D3AF37'; this.style.color='#141414'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='white'" onclick="toggleVariants(this)">Variants</button>
+            </div>
+
+            <div class="space-y-4 mb-6">
+              <div class="flex space-x-4">
+                <div class="flex-1">
+                  <label class="block text-sm font-light mb-2" style="color: #D3AF37;">Variant:</label>
+                  <select class="variant-select w-full p-2 rounded text-white border border-opacity-30 focus:border-opacity-100 transition-all duration-300 font-light focus:outline-none" style="background-color: #1a1a1a; border-color: #D3AF37;">
+                    <option value="Stock - 15,000 aUEC">Stock - 15,000 aUEC</option>
+                    <option value="Mirage - 18,000 aUEC">Mirage - 18,000 aUEC</option>
+                    <option value="Ghost - 18,000 aUEC">Ghost - 18,000 aUEC</option>
+                    <option value="Harvester - 18,000 aUEC">Harvester - 18,000 aUEC</option>
+                    <option value="Bloodline - 20,000 aUEC">Bloodline - 20,000 aUEC</option>
+                    <option value="Black Cherry - 20,000 aUEC">Black Cherry - 20,000 aUEC</option>
+                    <option value="Quicksilver - 22,000 aUEC">Quicksilver - 22,000 aUEC</option>
+                  </select>
+                </div>
+                <div class="w-24">
+                  <label class="block text-sm font-light mb-2" style="color: #D3AF37;">Qty:</label>
+                  <input type="number" class="quantity-input w-full p-2 rounded text-white border border-opacity-30 focus:border-opacity-100 transition-all duration-300 font-light focus:outline-none" style="background-color: #1a1a1a; border-color: #D3AF37;" value="1" min="1" max="5">
+                </div>
+              </div>
+            </div>
+            <button class="w-full py-3 text-sm font-medium rounded transition-all duration-300" style="background-color: #D3AF37; color: #141414;" onmouseover="this.style.backgroundColor='#b8941f'" onmouseout="this.style.backgroundColor='#D3AF37'" onclick="addToCart('Pyro RYT Multi-Tool', 'Greycat Pyro RYT Multi-Tool', this)">Add to Cart</button>
+
+            <div class="variants hidden mt-6 pt-6 border-t border-opacity-10 text-sm font-light space-y-2" style="border-color: #D3AF37;">
+              <p style="color: #D3AF37;" class="font-medium mb-3">Available Variants:</p>
+              <div class="text-gray-300 space-y-1">
+                <p>Stock - 15,000 aUEC</p>
+                <p>Mirage - 18,000 aUEC</p>
+                <p>Ghost - 18,000 aUEC</p>
+                <p>Harvester - 18,000 aUEC</p>
+                <p>Bloodline - 20,000 aUEC</p>
+                <p>Black Cherry - 20,000 aUEC</p>
+                <p>Quicksilver - 22,000 aUEC</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Image Modal -->
+  <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <img id="modalImage" src="" class="max-h-[90%] max-w-[90%] rounded shadow-lg" />
+  </div>
+
+  <!-- Cart Sidebar -->
+  <div id="cart-sidebar" class="fixed top-0 right-0 h-full w-96 shadow-lg transform translate-x-full transition-transform duration-300 z-50 overflow-y-auto border-l border-opacity-20" style="background-color: #141414; border-color: #D3AF37;">
+    <div class="p-6">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-light" style="color: #D3AF37;">Shopping Cart</h2>
+        <button onclick="toggleCart()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+      </div>
+      
+      <div id="cart-items-sidebar" class="space-y-4 mb-6">
+        <!-- Cart items will be populated here -->
+      </div>
+
+      <!-- Contact Details Section -->
+      <div class="border-t border-opacity-20 pt-6 mb-6" style="border-color: #D3AF37;">
+        <h3 class="text-lg font-light mb-4" style="color: #D3AF37;">Contact Details</h3>
+        
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-light mb-2">Discord Username *</label>
+            <input type="text" id="discord-username" placeholder="Your Discord Username Here" 
+                   class="w-full text-white p-3 rounded border border-opacity-30 focus:border-opacity-100 transition-all duration-300 font-light focus:outline-none" style="background-color: #1a1a1a; border-color: #D3AF37;">
+          </div>
+          
+          <div>
+            <label class="block text-sm font-light mb-3">Fulfillment Method *</label>
+            <div class="space-y-3">
+              <label class="flex items-center">
+                <input type="radio" name="fulfillment" value="collection" id="collection-radio" 
+                       class="mr-3" onchange="updateFulfillmentMethod()">
+                <span class="text-sm font-light">Collection at Seraphim Station (Free)</span>
+              </label>
+              <label class="flex items-center">
+                <input type="radio" name="fulfillment" value="delivery" id="delivery-radio" 
+                       class="mr-3" onchange="updateFulfillmentMethod()">
+                <span class="text-sm font-light">Delivery (+10% tax)</span>
+              </label>
+            </div>
+          </div>
+          
+          <div id="delivery-location" class="hidden">
+            <label class="block text-sm font-light mb-2">Delivery Location *</label>
+            <input type="text" id="delivery-address" placeholder="Enter delivery location" 
+                   class="w-full text-white p-3 rounded border border-opacity-30 focus:border-opacity-100 transition-all duration-300 font-light focus:outline-none" style="background-color: #1a1a1a; border-color: #D3AF37;">
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Summary & Checkout -->
+      <div class="bg-gray-800 p-4 rounded-lg mb-4">
+        <h3 class="text-lg font-medium mb-3" style="color: #D3AF37;">Order Summary</h3>
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between">
+            <span>Subtotal:</span>
+            <span id="cart-subtotal">0 aUEC</span>
+          </div>
+          <div class="flex justify-between" id="delivery-tax-row" style="display: none;">
+            <span>Delivery Tax (10%):</span>
+            <span id="delivery-tax">0 aUEC</span>
+          </div>
+          <div class="flex justify-between font-bold text-lg pt-2 border-t border-gray-600">
+            <span>Total:</span>
+            <span id="cart-total-sidebar" style="color: #D3AF37;">0 aUEC</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="text-center mb-4">
+        <p class="text-sm text-gray-300 mb-2">📋 Fill out your details above, then click checkout!</p>
+        <button onclick="checkout()" class="w-full py-3 text-lg font-medium rounded transition-all duration-300 shadow-lg" style="background-color: #D3AF37; color: #141414;" onmouseover="this.style.backgroundColor='#b8941f'" onmouseout="this.style.backgroundColor='#D3AF37'">
+          🛒 Checkout & Send to Order Sheet
+        </button>
+        <p class="text-xs text-gray-400 mt-2">Receipt will be downloaded & order sent to your management sheet</p>
+
+        <!-- Google Sheets Status -->
+        <div id="sheets-status" class="mt-2 text-xs text-center hidden">
+          <span id="sheets-status-text" class="px-2 py-1 rounded"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cart Overlay -->
+  <div id="cart-overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40" onclick="toggleCart()"></div>
+
+  <!-- Toast Notification -->
+  <div id="toast-notification" class="fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 z-50" style="background-color: #D3AF37; color: #141414;">
+    <div class="flex items-center space-x-2">
+      <span>✅</span>
+      <span id="toast-message">Item added to cart!</span>
+    </div>
+  </div>
+
+  <script>
+    // Google Sheets Configuration
+    window.GOOGLE_SHEETS_CONFIG = {
+      SHEET_ID: '1nOJrh5M9wsw4cIz3MRBSfOKrfFIdOGcVwPwMKpo9u-s',
+      // Google Apps Script Web App URL (NEW CLEAN DEPLOYMENT)
+      APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbz8jN8tITpiH1d3Ow-pIgqHo_mpw9Yrtg3VupVYmbowDfloInM6WPHIj5r-plzprh95qw/exec',
+      RANGE: 'Orders!A:N'
+    };
+
+    function openImage(src) {
+      const modal = document.getElementById('imageModal');
+      const modalImg = document.getElementById('modalImage');
+      modalImg.src = src;
+      modal.classList.remove('hidden');
+    }
+
+    document.getElementById('imageModal').addEventListener('click', () => {
+      document.getElementById('imageModal').classList.add('hidden');
+    });
+
+    function toggleDetails(button) {
+      const details = button.parentElement.parentElement.querySelector('.details');
+      details.classList.toggle('hidden');
+    }
+
+    function toggleVariants(button) {
+      const variants = button.parentElement.parentElement.querySelector('.variants');
+      variants.classList.toggle('hidden');
+    }
+
+    // Cart functionality
+    let cart = [];
+    let orderProcessing = false; // Flag to prevent cart closure during order processing
+
+    function updateCartCount() {
+      const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+      document.getElementById('cart-count').textContent = totalItems;
+    }
+
+    function addToCart(name, fullName, button) {
+      const card = button.closest('.rounded-lg');
+      const variantSelect = card.querySelector('.variant-select');
+      const quantityInput = card.querySelector('.quantity-input');
+      
+      if (!variantSelect || !quantityInput) {
+        console.error('Could not find variant select or quantity input');
+        return;
+      }
+      
+      const variant = variantSelect.value;
+      const quantity = parseInt(quantityInput.value);
+      
+      const [variantName, variantPrice] = variant.split(' - ');
+      const price = variantPrice;
+      
+      const existingItem = cart.find(item => item.name === name && item.variant === variantName);
+      
+      if (existingItem) {
+        existingItem.quantity += quantity;
+      } else {
+        cart.push({
+          name,
+          fullName,
+          variant: variantName,
+          price,
+          quantity
+        });
+      }
+      
+      updateCartCount();
+      renderCartSidebar();
+      showToast(`Added ${quantity}x ${name} (${variantName}) to cart!`);
+    }
+
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      updateCartCount();
+      renderCartSidebar();
+    }
+
+    function updateQuantity(index, newQuantity) {
+      if (newQuantity <= 0) {
+        removeFromCart(index);
+      } else {
+        cart[index].quantity = newQuantity;
+        updateCartCount();
+        renderCartSidebar();
+      }
+    }
+
+    function parsePrice(priceStr) {
+      return parseInt(priceStr.replace(/[^\d]/g, ''));
+    }
+
+    function formatPrice(price) {
+      return price.toLocaleString() + ' aUEC';
+    }
+
+    function updateFulfillmentMethod() {
+      const deliveryRadio = document.getElementById('delivery-radio');
+      const deliveryLocation = document.getElementById('delivery-location');
+      const deliveryTaxRow = document.getElementById('delivery-tax-row');
+      
+      if (deliveryRadio && deliveryRadio.checked) {
+        deliveryLocation.classList.remove('hidden');
+        deliveryTaxRow.classList.remove('hidden');
+      } else {
+        deliveryLocation.classList.add('hidden');
+        deliveryTaxRow.classList.add('hidden');
+      }
+      
+      renderCartSidebar();
+    }
+
+    function calculateTotal() {
+      const subtotal = cart.reduce((sum, item) => {
+        const itemPrice = parsePrice(item.price);
+        return sum + (itemPrice * item.quantity);
+      }, 0);
+      
+      const deliveryRadio = document.getElementById('delivery-radio');
+      const isDelivery = deliveryRadio && deliveryRadio.checked;
+      const deliveryTax = isDelivery ? Math.round(subtotal * 0.1) : 0;
+      const total = subtotal + deliveryTax;
+      
+      return { subtotal, deliveryTax, total };
+    }
+
+    function renderCartSidebar() {
+      const cartItems = document.getElementById('cart-items-sidebar');
+      const cartSubtotal = document.getElementById('cart-subtotal');
+      const deliveryTax = document.getElementById('delivery-tax');
+      const cartTotal = document.getElementById('cart-total-sidebar');
+      
+      if (cart.length === 0) {
+        cartItems.innerHTML = '<p class="text-gray-400 text-center py-8">Your cart is empty</p>';
+        if (cartSubtotal) cartSubtotal.textContent = '0 aUEC';
+        if (deliveryTax) deliveryTax.textContent = '0 aUEC';
+        if (cartTotal) cartTotal.textContent = '0 aUEC';
+        return;
+      }
+
+      cartItems.innerHTML = cart.map((item, index) => {
+        const itemPrice = parsePrice(item.price);
+        const itemTotal = itemPrice * item.quantity;
+
+        return `
+          <div class="bg-gray-700 p-3 rounded-lg">
+            <div class="mb-2">
+              <h3 class="font-bold text-sm">${item.name}</h3>
+              <p class="text-xs text-gray-300">${item.fullName}</p>
+              <p class="text-xs">Variant: ${item.variant}</p>
+              <p class="text-xs">Price: ${item.price}</p>
+            </div>
+            <div class="flex justify-between items-center">
+              <div class="flex items-center space-x-2">
+                <button onclick="updateQuantity(${index}, ${item.quantity - 1})" class="bg-red-600 px-2 py-1 rounded hover:bg-red-500 text-xs">-</button>
+                <span class="text-sm">${item.quantity}</span>
+                <button onclick="updateQuantity(${index}, ${item.quantity + 1})" class="bg-green-600 px-2 py-1 rounded hover:bg-green-500 text-xs">+</button>
+              </div>
+              <div class="text-right">
+                <p class="font-semibold text-sm">${formatPrice(itemTotal)}</p>
+                <button onclick="removeFromCart(${index})" class="text-red-400 hover:text-red-300 text-xs">Remove</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const totals = calculateTotal();
+      if (cartSubtotal) cartSubtotal.textContent = formatPrice(totals.subtotal);
+      if (deliveryTax) deliveryTax.textContent = formatPrice(totals.deliveryTax);
+      if (cartTotal) cartTotal.textContent = formatPrice(totals.total);
+    }
+
+    function toggleCart() {
+      // Prevent cart closure during order processing
+      if (orderProcessing) {
+        alert('⏳ Please wait while your order is being processed. The cart will close automatically when complete.');
+        return;
+      }
+
+      const sidebar = document.getElementById('cart-sidebar');
+      const overlay = document.getElementById('cart-overlay');
+
+      if (sidebar.classList.contains('translate-x-full')) {
+        sidebar.classList.remove('translate-x-full');
+        overlay.classList.remove('hidden');
+        renderCartSidebar();
+      } else {
+        sidebar.classList.add('translate-x-full');
+        overlay.classList.add('hidden');
+      }
+    }
+
+    async function checkout() {
+      if (cart.length === 0) {
+        alert('Your cart is empty!');
+        return;
+      }
+
+      // Clear any previous error highlighting
+      document.getElementById('discord-username').style.borderColor = '#D3AF37';
+      document.getElementById('delivery-address').style.borderColor = '#D3AF37';
+      
+      // Clear fulfillment method error styling
+      const fulfillmentLabels = document.querySelectorAll('input[name="fulfillment"]');
+      fulfillmentLabels.forEach(radio => {
+        const label = radio.closest('label');
+        if (label) {
+          label.style.color = '';
+          label.style.borderColor = '';
+          label.style.border = '';
+        }
+      });
+
+      // Validate required fields
+      const discordUsername = document.getElementById('discord-username');
+      const collectionRadio = document.getElementById('collection-radio');
+      const deliveryRadio = document.getElementById('delivery-radio');
+      const deliveryAddress = document.getElementById('delivery-address');
+
+      let hasErrors = false;
+
+      if (!discordUsername || !discordUsername.value.trim()) {
+        discordUsername.style.borderColor = '#ff0000';
+        hasErrors = true;
+      }
+
+      if (!collectionRadio || !deliveryRadio || (!collectionRadio.checked && !deliveryRadio.checked)) {
+        // Highlight both fulfillment options in red
+        fulfillmentLabels.forEach(radio => {
+          const label = radio.closest('label');
+          if (label) {
+            label.style.color = '#ff0000';
+            label.style.border = '1px solid #ff0000';
+            label.style.borderRadius = '4px';
+            label.style.padding = '4px';
+          }
+        });
+        hasErrors = true;
+      }
+
+      if (deliveryRadio.checked && (!deliveryAddress || !deliveryAddress.value.trim())) {
+        deliveryAddress.style.borderColor = '#ff0000';
+        hasErrors = true;
+      }
+
+      if (hasErrors) {
+        return;
+      }
+
+      const totals = calculateTotal();
+      const isDelivery = deliveryRadio.checked;
+      const currentTimestamp = Math.floor(Date.now() / 1000);
+      const currentDate = new Date().toLocaleString();
+
+      // Generate unique order ID
+      const orderId = `SA-${currentTimestamp}`;
+
+      // Create full receipt for file download
+      let fullReceipt = `## Receipt for @${discordUsername.value.trim()}\n`;
+      fullReceipt += `**Order ID:** ${orderId}\n`;
+      fullReceipt += `**Order Placed at:** <t:${currentTimestamp}:F>\n`;
+      fullReceipt += `**Order Started at:**\n`;
+      fullReceipt += `**Order Completed at:**\n\n`;
+      
+      fullReceipt += `### Purchased Items:\n`;
+      
+      cart.forEach((item, index) => {
+        const itemPrice = parsePrice(item.price);
+        const itemTotal = itemPrice * item.quantity;
+        
+        fullReceipt += `${index + 1}. ${item.name}`;
+        if (item.variant && item.variant !== 'Default') {
+          fullReceipt += ` (${item.variant})`;
+        }
+        fullReceipt += `\n`;
+        fullReceipt += `   - **Quantity:** ${item.quantity}\n`;
+        fullReceipt += `   - **Unit Price:** ${formatPrice(itemPrice)}\n`;
+        fullReceipt += `   - **Total Cost:** ${formatPrice(itemTotal)}\n\n`;
+      });
+      
+      fullReceipt += `### Transaction Summary:\n`;
+      fullReceipt += `- **Total Item Cost:** ${formatPrice(totals.subtotal)}\n`;
+      fullReceipt += `- **Delivery Fee (10%):** ${formatPrice(totals.deliveryTax)}\n`;
+      
+      if (isDelivery) {
+        fullReceipt += `- **Delivery Location:** ${deliveryAddress.value.trim()}\n`;
+      }
+      
+      fullReceipt += `- **Final Transaction Amount:** ${formatPrice(totals.total)}\n\n`;
+      
+      fullReceipt += `*Payment Received:* ❌\n`;
+      fullReceipt += `*Item Transferred:* ❌\n\n`;
+
+      // Create user confirmation message
+      let userMessage = `🎉 **Order Placed Successfully!**\n\n`;
+      userMessage += `**Order Details:**\n`;
+      userMessage += `• Order ID: ${orderId}\n`;
+      userMessage += `• Discord: @${discordUsername.value.trim()}\n`;
+      userMessage += `• Placed: ${currentDate}\n\n`;
+      
+      userMessage += `**Purchased Items:**\n`;
+      cart.forEach((item, index) => {
+        const itemPrice = parsePrice(item.price);
+        const itemTotal = itemPrice * item.quantity;
+        
+        userMessage += `${index + 1}. ${item.name}`;
+        if (item.variant && item.variant !== 'Default') {
+          userMessage += ` (${item.variant})`;
+        }
+        userMessage += `\n`;
+        userMessage += `   Quantity: x${item.quantity}\n`;
+        userMessage += `   Unit Price: ${formatPrice(itemPrice)}\n`;
+        userMessage += `   Total Cost: ${formatPrice(itemTotal)}\n\n`;
+      });
+      
+      userMessage += `**Order Total: ${formatPrice(totals.total)}**\n`;
+      userMessage += `**Fulfillment: ${isDelivery ? 'Delivery' : 'Collection at Seraphim Station'}**\n\n`;
+      
+      userMessage += `**What happens next?**\n`;
+      userMessage += `1. A receipt file has been downloaded to your computer\n`;
+      userMessage += `2. Please upload this receipt file to the marketplace channel in our Discord server\n`;
+      userMessage += `3. We will contact you within 72 hours to arrange payment and delivery\n`;
+      userMessage += `4. Your order will be updated in the item marketplace forum once it is started\n`;
+      userMessage += `5. Track your order anytime using your Order ID: ${orderId}\n\n`;
+      userMessage += `🔍 **Track Your Order:** Visit our Order Status page and enter your Order ID\n\n`;
+      userMessage += `Thank you for choosing Seraph Armory! 💖`;
+
+      // Download receipt as text file
+      const blob = new Blob([fullReceipt], { type: 'text/plain' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `seraph-armory-order-${discordUsername.value.trim()}-${Date.now()}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+
+      // Set processing flag to prevent cart closure
+      orderProcessing = true;
+
+      // Disable checkout button and show loading state
+      const checkoutButton = document.querySelector('button[onclick="checkout()"]');
+      const originalButtonText = checkoutButton.innerHTML;
+      checkoutButton.innerHTML = '⏳ Processing Order...';
+      checkoutButton.disabled = true;
+
+      // Show processing status
+      const statusDiv = document.getElementById('sheets-status');
+      const statusText = document.getElementById('sheets-status-text');
+      if (statusDiv && statusText) {
+        statusDiv.classList.remove('hidden');
+        statusText.textContent = '📤 Uploading order to management system...';
+        statusText.style.backgroundColor = '#3b82f6';
+        statusText.style.color = '#fff';
+      }
+
+      // Upload to Google Sheets FIRST (before receipt download)
+      let uploadSuccess = false;
+      let retryCount = 0;
+      const maxRetries = 3;
+
+      while (!uploadSuccess && retryCount < maxRetries) {
+        try {
+          await sendToGoogleSheets({
+            orderId: orderId,
+            timestamp: currentTimestamp,
+            date: currentDate,
+            discordUsername: discordUsername.value.trim(),
+            fulfillmentMethod: isDelivery ? 'Delivery' : 'Collection',
+            deliveryLocation: isDelivery ? deliveryAddress.value.trim() : 'Seraphim Station',
+            subtotal: totals.subtotal,
+            deliveryTax: totals.deliveryTax,
+            total: totals.total,
+            items: cart.map(item => ({
+              name: item.name,
+              fullName: item.fullName,
+              variant: item.variant,
+              price: item.price,
+              quantity: item.quantity,
+              itemTotal: parsePrice(item.price) * item.quantity
+            })),
+            status: 'Received',
+            paymentReceived: false,
+            itemTransferred: false
+          });
+
+          uploadSuccess = true;
+
+          // Show success status
+          if (statusDiv && statusText) {
+            statusText.textContent = '✅ Order successfully uploaded!';
+            statusText.style.backgroundColor = '#10b981';
+            statusText.style.color = '#fff';
+          }
+
+        } catch (error) {
+          retryCount++;
+          console.error(`Upload attempt ${retryCount} failed:`, error);
+
+          if (retryCount < maxRetries) {
+            // Show retry status
+            if (statusDiv && statusText) {
+              statusText.textContent = `🔄 Upload failed, retrying... (${retryCount}/${maxRetries})`;
+              statusText.style.backgroundColor = '#f59e0b';
+              statusText.style.color = '#000';
+            }
+            // Wait 1 second before retry
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          } else {
+            // All retries failed
+            if (statusDiv && statusText) {
+              statusText.textContent = '❌ Upload failed after 3 attempts. Please contact support.';
+              statusText.style.backgroundColor = '#ef4444';
+              statusText.style.color = '#fff';
+            }
+
+            // Re-enable checkout button and clear processing flag
+            checkoutButton.innerHTML = originalButtonText;
+            checkoutButton.disabled = false;
+            orderProcessing = false;
+
+            alert('❌ Failed to upload order to management system after multiple attempts.\n\nPlease try again or contact support if the issue persists.\n\nYour order has NOT been processed.');
+            return; // Exit without clearing cart or downloading receipt
+          }
+        }
+      }
+
+      // Only proceed with receipt download and cart clearing if upload was successful
+      if (uploadSuccess) {
+        // Update status to show receipt generation
+        if (statusDiv && statusText) {
+          statusText.textContent = '📄 Generating receipt...';
+          statusText.style.backgroundColor = '#3b82f6';
+          statusText.style.color = '#fff';
+        }
+
+        // Show user confirmation and download receipt
+        alert(userMessage);
+
+        // Clear cart and reset form
+        cart = [];
+        updateCartCount();
+        renderCartSidebar();
+
+        // Reset form
+        if (discordUsername) discordUsername.value = '';
+        if (deliveryAddress) deliveryAddress.value = '';
+        if (collectionRadio) collectionRadio.checked = false;
+        if (deliveryRadio) deliveryRadio.checked = false;
+        updateFulfillmentMethod();
+
+        // Re-enable checkout button and clear processing flag
+        checkoutButton.innerHTML = originalButtonText;
+        checkoutButton.disabled = false;
+        orderProcessing = false;
+
+        // Show final success status
+        if (statusDiv && statusText) {
+          statusText.textContent = '✅ Order completed successfully!';
+          statusText.style.backgroundColor = '#10b981';
+          statusText.style.color = '#fff';
+
+          // Hide status after 3 seconds and close cart
+          setTimeout(() => {
+            statusDiv.classList.add('hidden');
+            toggleCart(); // Close cart only after everything is complete
+          }, 3000);
+        }
+      }
+    }
+    function addBundleToCart(name, price, button) {
+      const card = button.closest('.rounded-lg');
+      const variantSelect = card.querySelector('.variant-select');
+      const quantityInput = card.querySelector('.quantity-input');
+      
+      const variant = variantSelect ? variantSelect.value : 'Default - Free';
+      const quantity = quantityInput ? parseInt(quantityInput.value) : 1;
+      
+      const [variantName, variantPrice] = variant.split(' - ');
+      const actualPrice = variantPrice;
+      
+      const existingItem = cart.find(item => item.name === name && item.variant === variantName);
+      
+      if (existingItem) {
+        existingItem.quantity += quantity;
+      } else {
+        cart.push({
+          name,
+          fullName: name,
+          variant: variantName,
+          price: actualPrice,
+          quantity
+        });
+      }
+      
+      updateCartCount();
+      renderCartSidebar();
+      showToast(`Added ${quantity}x ${name} (${variantName}) to cart!`);
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast-notification');
+      const toastMessage = document.getElementById('toast-message');
+      
+      toastMessage.textContent = message;
+      toast.classList.remove('translate-x-full');
+      
+      setTimeout(() => {
+        toast.classList.add('translate-x-full');
+      }, 3000);
+    }
+
+    // Initialize cart count on page load
+    document.addEventListener('DOMContentLoaded', updateCartCount);
+
+    // Convert Unix timestamp to readable date
+    document.addEventListener('DOMContentLoaded', function() {
+      const timestamp = 1755514800; // Your Unix timestamp
+      const date = new Date(timestamp * 1000);
+      const formattedDate = date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      const timeAgo = getTimeAgo(date);
+      
+      document.getElementById('price-update-date').innerHTML = `${formattedDate} (${timeAgo})`;
+    });
+
+    function getTimeAgo(date) {
+      const now = new Date();
+      const diffInSeconds = Math.floor((now - date) / 1000);
+      const diffInDays = Math.floor(diffInSeconds / (24 * 60 * 60));
+      
+      if (diffInDays === 0) return 'today';
+      if (diffInDays === 1) return '1 day ago';
+      return `${diffInDays} days ago`;
+    }
+
+    function toggleWeaponsDropdown() {
+      const dropdown = document.getElementById('weapons-dropdown');
+      dropdown.classList.toggle('hidden');
+    }
+
+    // Google Sheets Integration Functions
+    function validateGoogleSheetsConfig() {
+      if (!window.GOOGLE_SHEETS_CONFIG) {
+        throw new Error('Google Sheets configuration not loaded.');
+      }
+
+      if (window.GOOGLE_SHEETS_CONFIG.APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
+        throw new Error('Google Apps Script URL not configured. Please follow the setup guide.');
+      }
+
+      return true;
+    }
+
+    async function sendToGoogleSheets(orderData) {
+      // Validate Google Sheets configuration
+      try {
+        validateGoogleSheetsConfig();
+      } catch (error) {
+        throw new Error(`Configuration Error: ${error.message}`);
+      }
+
+      const { APPS_SCRIPT_URL } = window.GOOGLE_SHEETS_CONFIG;
+
+      // Prepare data for Google Apps Script using FormData to avoid CORS issues
+      const formData = new FormData();
+      formData.append('orderId', orderData.orderId);
+      formData.append('timestamp', orderData.timestamp);
+      formData.append('date', orderData.date);
+      formData.append('discordUsername', orderData.discordUsername);
+      formData.append('fulfillmentMethod', orderData.fulfillmentMethod);
+      formData.append('deliveryLocation', orderData.deliveryLocation);
+      formData.append('subtotal', orderData.subtotal);
+      formData.append('deliveryTax', orderData.deliveryTax);
+      formData.append('total', orderData.total);
+      formData.append('items', orderData.items.map(item => `${item.quantity}x ${item.name} (${item.variant}) - ${formatPrice(item.itemTotal)}`).join('\n'));
+      formData.append('itemCount', orderData.items.length);
+      formData.append('status', orderData.status);
+      formData.append('paymentReceived', orderData.paymentReceived);
+      formData.append('itemTransferred', orderData.itemTransferred);
+
+      // Send to Google Apps Script using FormData
+      console.log('Sending order to Google Sheets:', {
+        orderId: orderData.orderId,
+        timestamp: orderData.timestamp,
+        discordUsername: orderData.discordUsername,
+        url: APPS_SCRIPT_URL
+      });
+
+      const response = await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        body: formData
+      });
+
+      console.log('Response status:', response.status, response.statusText);
+
+      if (!response.ok) {
+        throw new Error(`Failed to send to Google Sheets: ${response.status} ${response.statusText}`);
+      }
+
+      const result = await response.text();
+      console.log('Raw response:', result);
+
+      try {
+        const jsonResult = JSON.parse(result);
+        console.log('Parsed response:', jsonResult);
+
+        if (jsonResult.error) {
+          throw new Error(jsonResult.error);
+        }
+        return jsonResult;
+      } catch (parseError) {
+        console.error('Failed to parse response as JSON:', parseError);
+        console.log('Raw response was:', result);
+        // If we can't parse as JSON, just return success
+        return { success: true, message: 'Order sent successfully' };
+      }
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+      const dropdown = document.getElementById('weapons-dropdown');
+      const button = event.target.closest('button');
+      
+      if (!button || !button.onclick || button.onclick.toString().indexOf('toggleWeaponsDropdown') === -1) {
+        dropdown.classList.add('hidden');
+      }
+    });
+
+    function searchWeapons() {
+      const searchTerm = document.getElementById('weapon-search').value.toLowerCase().trim();
+      
+      // Get all weapon cards (they're generated dynamically)
+      const allCards = document.querySelectorAll('#weapons .rounded-lg');
+      const allCategories = document.querySelectorAll('#weapons > div[id$="-grid"]');
+      
+      if (searchTerm === '') {
+        // Show everything when search is empty
+        allCategories.forEach(category => category.style.display = 'block');
+        allCards.forEach(card => card.style.display = 'block');
+        return;
+      }
+      
+      // Hide all categories initially
+      allCategories.forEach(category => category.style.display = 'none');
+      
+      let hasResults = false;
+      const visibleCategories = new Set();
+      
+      // Search through actual DOM cards instead of weapons array
+      allCards.forEach(card => {
+        const nameElement = card.querySelector('h3');
+        const fullNameElement = card.querySelector('.text-gray-400');
+        
+        if (!nameElement) return;
+        
+        const weaponName = nameElement.textContent.toLowerCase();
+        const weaponFullName = fullNameElement ? fullNameElement.textContent.toLowerCase() : '';
+        
+        if (weaponName.includes(searchTerm) || weaponFullName.includes(searchTerm)) {
+          card.style.display = 'block';
+          hasResults = true;
+          
+          // Find and show the parent category
+          const parentGrid = card.closest('[id$="-grid"]');
+          if (parentGrid) {
+            parentGrid.style.display = 'block';
+            visibleCategories.add(parentGrid.id);
+          }
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      
+      // If no results, show a message (optional)
+      if (!hasResults) {
+        console.log('No weapons found matching:', searchTerm);
+      }
+    }
+
+    // Add this array of background images
+    const backgroundImages = [
+      'https://images.hdqwalls.com/wallpapers/star-citizen-2019-4k-ze.jpg',
+      'https://images.hdqwalls.com/wallpapers/2023-star-citizen-5k-wu.jpg',
+      'https://images.hdqwalls.com/wallpapers/star-citizen-wanderer-4k-f8.jpg',
+      'https://images.hdqwalls.com/wallpapers/star-citizen-4k-ad.jpg',
+      'https://images.hdqwalls.com/wallpapers/star-citizen-2019-17.jpg',
+      'https://www.hasgaha.com/wp-content/uploads/photo-gallery/Star_Citizen/Star_Citizen_Alpha_3.10/.original/SC-3.10_20200824_223738_M50-streaking_f.png'
+    ];
+
+    // Function to set random background
+    function setRandomBackground() {
+      const randomIndex = Math.floor(Math.random() * backgroundImages.length);
+      const heroSection = document.getElementById('hero-section');
+      if (heroSection) {
+        heroSection.style.backgroundImage = `url('${backgroundImages[randomIndex]}')`;
+        heroSection.style.backgroundSize = 'cover';
+        heroSection.style.backgroundPosition = 'center';
+        heroSection.style.backgroundRepeat = 'no-repeat';
+      }
+    }
+
+    // Set random background on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      setRandomBackground();
+    });
+
+
+  </script>
+</body>
+</html>
