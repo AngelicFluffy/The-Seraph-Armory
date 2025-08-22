@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order Status - The Seraph Armory</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="google-sheets-config.js"></script>
+  <script>
+    // Ensure config is available for order status page
+    window.GOOGLE_SHEETS_CONFIG = {
+      SHEET_ID: '1nOJrh5M9wsw4cIz3MRBSfOKrfFIdOGcVwPwMKpo9u-s',
+      APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbz8jN8tITpiH1d3Ow-pIgqHo_mpw9Yrtg3VupVYmbowDfloInM6WPHIj5r-plzprh95qw/exec',
+      RANGE: 'Orders!A:N'
+    };
+  </script>
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+    .weapon-image {
+      aspect-ratio: 16/7;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body class="text-white font-sans" style="background-color: #141414;">
+
+  <!-- Header -->
+  <header class="py-8 px-4 border-b border-opacity-20" style="background-color: #141414; border-color: #D3AF37;">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <a href="index_beta.html" class="text-2xl font-light hover:opacity-80 transition-opacity" style="color: #D3AF37;">
+          ← The Seraph Armory
+        </a>
+      </div>
+      <div class="text-sm font-light text-gray-300">
+        <strong>Game Version:</strong> 4.2.1
+      </div>
+    </div>
+  </header>
+
+  <!-- Order Status Section -->
+  <section class="py-16 px-4" style="background-color: #141414;">
+    <div class="max-w-4xl mx-auto">
+      <h1 class="text-4xl font-light mb-8 text-center" style="color: #D3AF37;">Order Status</h1>
+      
+      <!-- Order Lookup Form -->
+      <div class="bg-gray-800 p-8 rounded-lg mb-8 border border-opacity-20" style="border-color: #D3AF37;">
+        <h2 class="text-xl font-light mb-6 text-center" style="color: #D3AF37;">Track Your Order</h2>
+        <p class="text-gray-300 text-center mb-6">Enter your Order ID from your receipt to check the status of your order.</p>
+        
+        <div class="flex flex-col md:flex-row gap-4 max-w-lg mx-auto">
+          <input type="text" id="order-id-input" placeholder="Enter Order ID (e.g., SA-1734567890)" 
+                 class="flex-1 p-4 rounded text-white border border-opacity-30 focus:border-opacity-100 transition-all duration-300 font-light focus:outline-none" 
+                 style="background-color: #1a1a1a; border-color: #D3AF37;">
+          <button onclick="trackOrder()" id="track-order-btn" 
+                  class="px-8 py-4 font-medium rounded transition-all duration-300 shadow-lg" 
+                  style="background-color: #D3AF37; color: #141414;" 
+                  onmouseover="this.style.backgroundColor='#b8941f'" 
+                  onmouseout="this.style.backgroundColor='#D3AF37'">
+            🔍 Track Order
+          </button>
+        </div>
+      </div>
+
+      <!-- Order Status Display -->
+      <div id="order-status-display" class="hidden">
+        <div class="bg-gray-800 p-8 rounded-lg border border-opacity-20" style="border-color: #D3AF37;">
+          <div class="text-center mb-6">
+            <h3 class="text-2xl font-light mb-2" style="color: #D3AF37;">Order Details</h3>
+            <p class="text-gray-300" id="order-id-display">Order ID: SA-1234567890</p>
+          </div>
+
+          <!-- Status Progress Bar -->
+          <div class="mb-8">
+            <div class="flex justify-between items-center mb-4">
+              <div class="flex flex-col items-center">
+                <div id="status-pending" class="w-8 h-8 rounded-full border-2 flex items-center justify-center mb-2" style="border-color: #D3AF37;">
+                  <span class="text-xs">📋</span>
+                </div>
+                <span class="text-xs text-gray-400">Received</span>
+              </div>
+              <div class="flex-1 h-1 mx-2 bg-gray-600 rounded">
+                <div id="progress-bar-1" class="h-full bg-gray-600 rounded transition-all duration-500" style="width: 0%;"></div>
+              </div>
+              <div class="flex flex-col items-center">
+                <div id="status-processing" class="w-8 h-8 rounded-full border-2 border-gray-600 flex items-center justify-center mb-2">
+                  <span class="text-xs">⚙️</span>
+                </div>
+                <span class="text-xs text-gray-400">Processing</span>
+              </div>
+              <div class="flex-1 h-1 mx-2 bg-gray-600 rounded">
+                <div id="progress-bar-2" class="h-full bg-gray-600 rounded transition-all duration-500" style="width: 0%;"></div>
+              </div>
+              <div class="flex flex-col items-center">
+                <div id="status-ready" class="w-8 h-8 rounded-full border-2 border-gray-600 flex items-center justify-center mb-2">
+                  <span class="text-xs">🚚</span>
+                </div>
+                <span class="text-xs text-gray-400">Shipping/Ready</span>
+              </div>
+              <div class="flex-1 h-1 mx-2 bg-gray-600 rounded">
+                <div id="progress-bar-3" class="h-full bg-gray-600 rounded transition-all duration-500" style="width: 0%;"></div>
+              </div>
+              <div class="flex flex-col items-center">
+                <div id="status-completed" class="w-8 h-8 rounded-full border-2 border-gray-600 flex items-center justify-center mb-2">
+                  <span class="text-xs">✅</span>
+                </div>
+                <span class="text-xs text-gray-400">Completed</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Current Status -->
+          <div class="text-center mb-6">
+            <div class="inline-block px-6 py-3 rounded-full text-lg font-medium mb-4" id="current-status-badge" style="background-color: #D3AF37; color: #141414;">
+              📋 Received
+            </div>
+            <p class="text-gray-300" id="status-description">Your order has been received and is waiting to be processed.</p>
+            <p class="text-sm text-gray-400 mt-2" id="estimated-time">Estimated completion: ~2-4 hours</p>
+          </div>
+
+          <!-- Order Items -->
+          <div class="border-t border-gray-600 pt-6">
+            <h4 class="text-lg font-light mb-4" style="color: #D3AF37;">Order Items</h4>
+            <div id="order-items-list" class="space-y-2">
+              <!-- Items will be populated here -->
+            </div>
+          </div>
+
+          <!-- Order Info -->
+          <div class="border-t border-gray-600 pt-6 mt-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <p class="text-gray-400">Order Date:</p>
+                <p class="text-white" id="order-date">January 15, 2025</p>
+              </div>
+              <div>
+                <p class="text-gray-400">Fulfillment Method:</p>
+                <p class="text-white" id="fulfillment-method">Collection at Seraphim Station</p>
+              </div>
+              <div>
+                <p class="text-gray-400">Total Amount:</p>
+                <p class="text-white" id="order-total">15,000 aUEC</p>
+              </div>
+              <div>
+                <p class="text-gray-400">Contact:</p>
+                <p class="text-white" id="customer-discord">@username</p>
+              </div>
+              <div>
+                <p class="text-gray-400">Payment Received:</p>
+                <p class="text-white" id="payment-status">❌</p>
+              </div>
+              <div>
+                <p class="text-gray-400">Items Transferred:</p>
+                <p class="text-white" id="transfer-status">❌</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact Support -->
+          <div class="border-t border-gray-600 pt-6 mt-6 text-center">
+            <p class="text-gray-400 text-sm mb-2">Need help with your order?</p>
+            <p class="text-white text-sm">Contact us on Discord or at Seraphim Station</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Not Found -->
+      <div id="order-not-found" class="hidden">
+        <div class="bg-red-900 bg-opacity-20 border border-red-500 border-opacity-30 p-8 rounded-lg text-center">
+          <h3 class="text-xl font-light mb-4 text-red-400">Order Not Found</h3>
+          <p class="text-gray-300 mb-4">We couldn't find an order with that ID. Please check your Order ID and try again.</p>
+          <p class="text-sm text-gray-400">Order IDs are found on your receipt and start with "SA-" followed by numbers.</p>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="order-loading" class="hidden">
+        <div class="bg-gray-800 p-8 rounded-lg border border-opacity-20 text-center" style="border-color: #D3AF37;">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style="border-color: #D3AF37;"></div>
+          <p class="text-gray-300">Looking up your order...</p>
+        </div>
+      </div>
+
+      <!-- Back to Store -->
+      <div class="text-center mt-8">
+        <a href="index_beta.html" class="inline-block px-6 py-3 font-medium rounded transition-all duration-300 border border-opacity-30" 
+           style="border-color: #D3AF37; color: white;" 
+           onmouseover="this.style.backgroundColor='#D3AF37'; this.style.color='#141414'" 
+           onmouseout="this.style.backgroundColor='transparent'; this.style.color='white'">
+          ← Back to Store
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-8 px-4 border-t border-opacity-20 text-center" style="background-color: #141414; border-color: #D3AF37;">
+    <p class="text-gray-400 text-sm">© 2025 The Seraph Armory - Operating from Seraphim Station</p>
+  </footer>
+
+  <script>
+    // Utility function to format prices
+    function formatPrice(price) {
+      if (typeof price === 'string') {
+        if (price.toLowerCase() === 'free') return 'Free';
+        return price;
+      }
+      return price.toLocaleString() + ' aUEC';
+    }
+
+    // Order Status Tracking Functions
+    async function trackOrder() {
+      const orderIdInput = document.getElementById('order-id-input');
+      const orderId = orderIdInput.value.trim();
+      
+      if (!orderId) {
+        alert('Please enter an Order ID');
+        return;
+      }
+      
+      // Show loading state
+      showOrderLoading();
+      
+      try {
+        // Look up order in Google Sheets
+        const orderData = await lookupOrderInSheets(orderId);
+        
+        if (orderData) {
+          displayOrderStatus(orderData);
+        } else {
+          showOrderNotFound();
+        }
+      } catch (error) {
+        console.error('Error tracking order:', error);
+        alert('Error looking up order. Please try again.');
+        hideOrderDisplays();
+      }
+    }
+
+    async function lookupOrderInSheets(orderId) {
+      try {
+        const { APPS_SCRIPT_URL } = window.GOOGLE_SHEETS_CONFIG;
+
+        // Prepare data for lookup request
+        const formData = new FormData();
+        formData.append('orderId', orderId);
+
+        // Call Google Apps Script to lookup order using POST
+        const response = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        if (result.success) {
+          return result.orderData;
+        } else {
+          return null; // Order not found
+        }
+
+      } catch (error) {
+        console.error('Error looking up order:', error);
+        throw error;
+      }
+    }
+
+    function displayOrderStatus(orderData) {
+      hideOrderDisplays();
+
+      const statusDisplay = document.getElementById('order-status-display');
+      statusDisplay.classList.remove('hidden');
+
+      // Update order details
+      document.getElementById('order-id-display').textContent = `Order ID: ${orderData.orderId}`;
+      document.getElementById('order-date').textContent = orderData.date;
+      document.getElementById('fulfillment-method').textContent = orderData.fulfillmentMethod === 'Collection' ? 'Collection at Seraphim Station' : `Delivery to ${orderData.deliveryLocation}`;
+      document.getElementById('order-total').textContent = `${formatPrice(orderData.total)}`;
+      document.getElementById('customer-discord').textContent = `@${orderData.discordUsername}`;
+
+      // Update payment and transfer status
+      document.getElementById('payment-status').textContent = orderData.paymentReceived ? '✅' : '❌';
+      document.getElementById('transfer-status').textContent = orderData.itemTransferred ? '✅' : '❌';
+
+      // Update status progress
+      updateStatusProgress(orderData.status);
+
+      // Update order items
+      const itemsList = document.getElementById('order-items-list');
+      itemsList.innerHTML = '';
+      orderData.items.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'flex justify-between text-sm';
+        itemDiv.innerHTML = `
+          <span class="text-gray-300">${item.quantity}x ${item.name} (${item.variant})</span>
+          <span class="text-white">${formatPrice(item.itemTotal)}</span>
+        `;
+        itemsList.appendChild(itemDiv);
+      });
+    }
+
+    function updateStatusProgress(status) {
+      // Reset all status indicators
+      const statusElements = ['pending', 'processing', 'ready', 'completed'];
+      const progressBars = ['progress-bar-1', 'progress-bar-2', 'progress-bar-3'];
+
+      statusElements.forEach(s => {
+        const element = document.getElementById(`status-${s}`);
+        element.style.borderColor = '#6b7280';
+        element.style.backgroundColor = 'transparent';
+      });
+
+      progressBars.forEach(p => {
+        const element = document.getElementById(p);
+        element.style.backgroundColor = '#6b7280';
+        element.style.width = '0%';
+      });
+
+      // Update based on current status
+      const statusConfig = {
+        'Received': {
+          activeSteps: ['pending'],
+          progressBars: [],
+          badge: '📋 Received',
+          description: 'Your order has been received and is waiting to be processed.',
+          estimatedTime: '~2-4 hours',
+          badgeColor: '#f59e0b'
+        },
+        'Processing': {
+          activeSteps: ['pending', 'processing'],
+          progressBars: ['progress-bar-1'],
+          badge: '⚙️ Processing',
+          description: 'We are currently gathering your items and preparing your order.',
+          estimatedTime: '~1-2 hours',
+          badgeColor: '#3b82f6'
+        },
+        'Shipping': {
+          activeSteps: ['pending', 'processing', 'ready'],
+          progressBars: ['progress-bar-1', 'progress-bar-2'],
+          badge: '🚚 Shipping',
+          description: 'Your order is being delivered to the specified location.',
+          estimatedTime: '~30 minutes',
+          badgeColor: '#8b5cf6'
+        },
+        'Ready for Collection': {
+          activeSteps: ['pending', 'processing', 'ready'],
+          progressBars: ['progress-bar-1', 'progress-bar-2'],
+          badge: '📦 Ready for Collection',
+          description: 'Your order is ready! Please collect it at Seraphim Station.',
+          estimatedTime: 'Available now',
+          badgeColor: '#10b981'
+        },
+        'Completed': {
+          activeSteps: ['pending', 'processing', 'ready', 'completed'],
+          progressBars: ['progress-bar-1', 'progress-bar-2', 'progress-bar-3'],
+          badge: '✅ Completed',
+          description: 'Your order has been completed successfully. Thank you!',
+          estimatedTime: 'Completed',
+          badgeColor: '#10b981'
+        }
+      };
+
+      const config = statusConfig[status] || statusConfig['Received'];
+
+      // Activate status steps
+      config.activeSteps.forEach(step => {
+        const element = document.getElementById(`status-${step}`);
+        element.style.borderColor = '#D3AF37';
+        element.style.backgroundColor = '#D3AF37';
+      });
+
+      // Activate progress bars
+      config.progressBars.forEach(bar => {
+        const element = document.getElementById(bar);
+        element.style.backgroundColor = '#D3AF37';
+        element.style.width = '100%';
+      });
+
+      // Update status badge and description
+      const statusBadge = document.getElementById('current-status-badge');
+      const statusDescription = document.getElementById('status-description');
+      const estimatedTime = document.getElementById('estimated-time');
+
+      statusBadge.textContent = config.badge;
+      statusBadge.style.backgroundColor = config.badgeColor;
+      statusDescription.textContent = config.description;
+      estimatedTime.textContent = `Estimated completion: ${config.estimatedTime}`;
+    }
+
+    function showOrderLoading() {
+      hideOrderDisplays();
+      document.getElementById('order-loading').classList.remove('hidden');
+    }
+
+    function showOrderNotFound() {
+      hideOrderDisplays();
+      document.getElementById('order-not-found').classList.remove('hidden');
+    }
+
+    function hideOrderDisplays() {
+      document.getElementById('order-status-display').classList.add('hidden');
+      document.getElementById('order-not-found').classList.add('hidden');
+      document.getElementById('order-loading').classList.add('hidden');
+    }
+
+    // Allow Enter key to trigger order tracking
+    document.addEventListener('DOMContentLoaded', function() {
+      const orderIdInput = document.getElementById('order-id-input');
+      if (orderIdInput) {
+        orderIdInput.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            trackOrder();
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
