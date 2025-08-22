@@ -624,6 +624,52 @@
     <img id="modalImage" src="" class="max-h-[90%] max-w-[90%] rounded shadow-lg" />
   </div>
 
+  <!-- Order Success Modal -->
+  <div id="order-success-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+    <div class="rounded-lg p-8 max-w-md w-full mx-4 border border-opacity-30" style="background-color: #1a1a1a; border-color: #D3AF37;">
+      <div class="text-center">
+        <div class="text-6xl mb-4">🎉</div>
+        <h2 class="text-2xl font-light mb-4" style="color: #D3AF37;">Order Placed Successfully!</h2>
+
+        <div class="mb-6">
+          <p class="text-gray-300 mb-2">Your Order ID:</p>
+          <p id="success-order-id" class="text-xl font-mono px-4 py-2 rounded border border-opacity-30" style="background-color: #141414; border-color: #D3AF37; color: #D3AF37;"></p>
+        </div>
+
+        <div class="mb-6 text-left text-sm text-gray-300">
+          <p class="mb-2"><strong style="color: #D3AF37;">What happens next?</strong></p>
+          <div class="ml-2 space-y-2">
+            <p>✅ Your order has been automatically processed</p>
+            <p>✅ We'll ping you on Discord when it's ready to collect</p>
+            <p>✅ Track your order status anytime using the link below</p>
+            <p>✅ Download your receipt for your records (optional)</p>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <button id="download-receipt-btn" class="w-full py-3 px-6 rounded font-medium transition-all duration-300"
+                  style="background-color: #D3AF37; color: #141414;"
+                  onmouseover="this.style.backgroundColor='#b8941f'"
+                  onmouseout="this.style.backgroundColor='#D3AF37'">
+            📄 Download Receipt
+          </button>
+
+          <a href="order-status.html" class="block w-full py-3 px-6 rounded font-medium border border-opacity-30 transition-all duration-300 text-center"
+             style="border-color: #D3AF37; color: #D3AF37; background-color: transparent; text-decoration: none;"
+             onmouseover="this.style.backgroundColor='#D3AF37'; this.style.color='#141414'"
+             onmouseout="this.style.backgroundColor='transparent'; this.style.color='#D3AF37'">
+            🔍 Track Your Order
+          </a>
+
+          <button onclick="closeOrderSuccessModal()" class="w-full py-3 px-6 rounded font-medium text-gray-400 hover:text-white transition-all duration-300"
+                  style="background-color: transparent;">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Cart Sidebar -->
   <div id="cart-sidebar" class="fixed top-0 right-0 h-full w-96 shadow-lg transform translate-x-full transition-transform duration-300 z-50 overflow-y-auto border-l border-opacity-20" style="background-color: #141414; border-color: #D3AF37;">
     <div class="p-6">
@@ -988,40 +1034,69 @@
       const orderId = `SA-${currentTimestamp}`;
 
       // Create full receipt for file download
-      let fullReceipt = `## Receipt for @${discordUsername.value.trim()}\n`;
-      fullReceipt += `**Order ID:** ${orderId}\n`;
-      fullReceipt += `**Order Placed at:** <t:${currentTimestamp}:F>\n`;
-      fullReceipt += `**Order Started at:**\n`;
-      fullReceipt += `**Order Completed at:**\n\n`;
-      
-      fullReceipt += `### Purchased Items:\n`;
-      
+      let fullReceipt = `===============================================\n`;
+      fullReceipt += `           THE SERAPH ARMORY\n`;
+      fullReceipt += `        Star Citizen Equipment Store\n`;
+      fullReceipt += `===============================================\n\n`;
+
+      fullReceipt += `RECEIPT FOR: ${discordUsername.value.trim()}\n`;
+      fullReceipt += `ORDER ID: ${orderId}\n`;
+      fullReceipt += `DATE: ${currentDate}\n`;
+      fullReceipt += `STATUS: Received\n\n`;
+
+      fullReceipt += `-----------------------------------------------\n`;
+      fullReceipt += `PURCHASED ITEMS:\n`;
+      fullReceipt += `-----------------------------------------------\n`;
+
       cart.forEach((item, index) => {
         const itemPrice = parsePrice(item.price);
         const itemTotal = itemPrice * item.quantity;
-        
+
         fullReceipt += `${index + 1}. ${item.name}`;
         if (item.variant && item.variant !== 'Default') {
           fullReceipt += ` (${item.variant})`;
         }
         fullReceipt += `\n`;
-        fullReceipt += `   - **Quantity:** ${item.quantity}\n`;
-        fullReceipt += `   - **Unit Price:** ${formatPrice(itemPrice)}\n`;
-        fullReceipt += `   - **Total Cost:** ${formatPrice(itemTotal)}\n\n`;
+        fullReceipt += `   Quantity: ${item.quantity}\n`;
+        fullReceipt += `   Unit Price: ${formatPrice(itemPrice)}\n`;
+        fullReceipt += `   Item Total: ${formatPrice(itemTotal)}\n\n`;
       });
-      
-      fullReceipt += `### Transaction Summary:\n`;
-      fullReceipt += `- **Total Item Cost:** ${formatPrice(totals.subtotal)}\n`;
-      fullReceipt += `- **Delivery Fee (10%):** ${formatPrice(totals.deliveryTax)}\n`;
-      
+
+      fullReceipt += `-----------------------------------------------\n`;
+      fullReceipt += `TRANSACTION SUMMARY:\n`;
+      fullReceipt += `-----------------------------------------------\n`;
+      fullReceipt += `Subtotal:        ${formatPrice(totals.subtotal)}\n`;
+
       if (isDelivery) {
-        fullReceipt += `- **Delivery Location:** ${deliveryAddress.value.trim()}\n`;
+        fullReceipt += `Delivery Fee:    ${formatPrice(totals.deliveryTax)}\n`;
+        fullReceipt += `Delivery To:     ${deliveryAddress.value.trim()}\n`;
+      } else {
+        fullReceipt += `Collection At:   Seraphim Station\n`;
       }
-      
-      fullReceipt += `- **Final Transaction Amount:** ${formatPrice(totals.total)}\n\n`;
-      
-      fullReceipt += `*Payment Received:* ❌\n`;
-      fullReceipt += `*Item Transferred:* ❌\n\n`;
+
+      fullReceipt += `-----------------------------------------------\n`;
+      fullReceipt += `TOTAL AMOUNT:    ${formatPrice(totals.total)}\n`;
+      fullReceipt += `-----------------------------------------------\n\n`;
+
+      fullReceipt += `ORDER STATUS:\n`;
+      fullReceipt += `Payment Received: [ ] Pending\n`;
+      fullReceipt += `Items Ready:      [ ] Pending\n\n`;
+
+      fullReceipt += `FULFILLMENT METHOD: ${isDelivery ? 'Delivery' : 'Collection'}\n`;
+      if (isDelivery) {
+        fullReceipt += `DELIVERY LOCATION: ${deliveryAddress.value.trim()}\n`;
+      } else {
+        fullReceipt += `COLLECTION LOCATION: Seraphim Station\n`;
+      }
+
+      fullReceipt += `\n===============================================\n`;
+      fullReceipt += `Thank you for choosing The Seraph Armory!\n`;
+      fullReceipt += `\n`;
+      fullReceipt += `IMPORTANT:\n`;
+      fullReceipt += `- Keep this receipt for your records\n`;
+      fullReceipt += `- Use Order ID to track your order status\n`;
+      fullReceipt += `- Contact us on Discord for any questions\n`;
+      fullReceipt += `===============================================\n`;
 
       // Create user confirmation message
       let userMessage = `🎉 **Order Placed Successfully!**\n\n`;
@@ -1057,16 +1132,12 @@
       userMessage += `🔍 **Track Your Order:** Visit our Order Status page and enter your Order ID\n\n`;
       userMessage += `Thank you for choosing Seraph Armory! 💖`;
 
-      // Download receipt as text file
-      const blob = new Blob([fullReceipt], { type: 'text/plain' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `seraph-armory-order-${discordUsername.value.trim()}-${Date.now()}.txt`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
+      // Store receipt data for download
+      window.currentOrderReceipt = {
+        content: fullReceipt,
+        filename: `seraph-armory-order-${discordUsername.value.trim()}-${Date.now()}.txt`,
+        orderId: orderId
+      };
 
       // Set processing flag to prevent cart closure
       orderProcessing = true;
@@ -1167,8 +1238,8 @@
           statusText.style.color = '#fff';
         }
 
-        // Show user confirmation and download receipt
-        alert(userMessage);
+        // Show order success modal
+        showOrderSuccessModal(orderId);
 
         // Clear cart and reset form
         cart = [];
@@ -1447,6 +1518,50 @@
     document.addEventListener('DOMContentLoaded', function() {
       setRandomBackground();
     });
+
+    // Order Success Modal Functions
+    function showOrderSuccessModal(orderId) {
+      document.getElementById('success-order-id').textContent = orderId;
+      document.getElementById('order-success-modal').classList.remove('hidden');
+
+      // Set up download button
+      const downloadBtn = document.getElementById('download-receipt-btn');
+      downloadBtn.onclick = function() {
+        downloadCurrentReceipt();
+      };
+
+      // Add escape key listener
+      document.addEventListener('keydown', handleModalEscape);
+    }
+
+    function closeOrderSuccessModal() {
+      document.getElementById('order-success-modal').classList.add('hidden');
+      // Remove escape key listener
+      document.removeEventListener('keydown', handleModalEscape);
+    }
+
+    function handleModalEscape(e) {
+      if (e.key === 'Escape') {
+        closeOrderSuccessModal();
+      }
+    }
+
+    function downloadCurrentReceipt() {
+      if (window.currentOrderReceipt) {
+        const blob = new Blob([window.currentOrderReceipt.content], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = window.currentOrderReceipt.filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+
+        // Optional: Close modal after download
+        // closeOrderSuccessModal();
+      }
+    }
 
     // Prevent negative quantities in all quantity inputs
     document.addEventListener('DOMContentLoaded', function() {
