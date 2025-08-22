@@ -12,7 +12,7 @@ const GOOGLE_SHEETS_CONFIG = {
   API_KEY: 'AIzaSyAHPBwiyIDWOa5nrewQJDOOq_9wlHe3Bsc',
 
   // The range where orders will be written (sheet name and columns)
-  RANGE: 'Orders!A:N',
+  RANGE: 'Orders!A:M',
 
   // Column headers for reference (these should be in row 1 of your sheet)
   HEADERS: [
@@ -27,9 +27,8 @@ const GOOGLE_SHEETS_CONFIG = {
     'Total (aUEC)',      // I - Final total
     'Items',             // J - List of ordered items
     'Item Count',        // K - Number of different items
-    'Status',            // L - Received/Processing/Shipping/Ready for Collection
-    'Payment Received',  // M - true/false (checkbox)
-    'Item Transferred'   // N - true/false (checkbox)
+    'Status',            // L - Received/Processing/Shipping/Ready for Collection/Completed/Cancelled
+    'Payment Received'   // M - true/false (checkbox)
   ]
 };
 
