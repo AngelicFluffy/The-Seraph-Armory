@@ -62,12 +62,6 @@
       aspect-ratio: 16/7;
       object-fit: cover;
     }
-
-    /* Quantity input styling */
-    .quantity-input:invalid {
-      border-color: #ef4444 !important;
-      box-shadow: 0 0 0 1px #ef4444;
-    }
   </style>
 </head>
 <body class="text-white font-sans" style="background-color: #141414;">
@@ -237,9 +231,9 @@
               <span class="text-sm font-light text-gray-300 ml-2">10+ remaining in stock</span>
             </div>
             
-            <div class="mb-6">
-              <span class="text-xl font-light text-white">28,500 - 325,000 aUEC</span>
-              <span class="text-sm font-light text-gray-400 ml-2"> Depending on loadout</span>
+            <div class="mb-6" id="medrunner-price-display">
+              <span class="text-xl font-light text-white">Loading prices...</span>
+              <span class="text-sm font-light text-gray-400 ml-2">Depending on loadout</span>
             </div>
             
             <div class="flex space-x-4 mb-6">
@@ -250,12 +244,8 @@
               <div class="flex space-x-4">
                 <div class="flex-1">
                   <label class="block text-sm font-light mb-2" style="color: #D3AF37;">Variant:</label>
-                  <select class="variant-select w-full p-2 rounded text-white border border-opacity-30 focus:border-opacity-100 transition-all duration-300 font-light focus:outline-none" style="background-color: #1a1a1a; border-color: #D3AF37;">
-                    <option value="Scout - 28,500 aUEC">Scout - 28,500 aUEC</option>
-                    <option value="Shotgun - 31,000 aUEC">Shotgun - 31,000 aUEC</option>
-                    <option value="Heavy - 45,000 aUEC">Heavy - 45,000 aUEC</option>
-                    <option value="Marksman - 200,000 aUEC">Marksman - 200,000 aUEC</option>
-                    <option value="Sniper - 325,000 aUEC">Sniper - 325,000 aUEC</option>
+                  <select id="medrunner-variant-select" class="variant-select w-full p-2 rounded text-white border border-opacity-30 focus:border-opacity-100 transition-all duration-300 font-light focus:outline-none" style="background-color: #1a1a1a; border-color: #D3AF37;">
+                    <option value="Loading...">Loading prices...</option>
                   </select>
                 </div>
                 <div class="w-24">
@@ -348,8 +338,18 @@
       <div id="handguns-grid" class="space-y-6"></div>
     </div>
 
-    <script>
-      const weapons = [
+
+
+  </section>
+
+  <!-- Equipment Section -->
+  <section id="equipment" class="py-16 px-4" style="background-color: #141414;">
+    <h2 class="text-3xl font-light mb-8" style="color: #D3AF37;">Equipment</h2>
+    <div id="equipment-grid" class="space-y-6"></div>
+  </section>
+
+  <script>
+    const weapons = [
         // Special Weapons
         ["Scourge Railgun", "https://media.starcitizen.tools/thumb/6/65/Scourge_-_On_crate_with_3_clips_-_Flat.jpg/2560px-Scourge_-_On_crate_with_3_clips_-_Flat.jpg.webp", "400,000 aUEC", 1, "Ballistic", "13 Round", ".937", "70rpm", "200m", ["Black - 410,000 aUEC", "Desert - 415,000 aUEC"], "Apocalypse Arms Scourge Railgun", "Special Weapons"],
         ["Animus Missile Launcher", "https://scwiki.hu/images/thumb/7/7e/Apar_ML_Shot_002_11Dec19-Min.jpg/2560px-Apar_ML_Shot_002_11Dec19-Min.jpg", "300,000 aUEC", 1, "Missile", "3 Round", "40mm", "300rpm", "2000m", ["Default - 300,000 aUEC"], "Apocalypse Arms Animus Missile Launcher", "Special Weapons"],
@@ -394,7 +394,11 @@
         ["Arclight Pistol", "https://media.starcitizen.tools/thumb/5/52/Arclight_II_-_with_2_clips_-_flat.jpg/2560px-Arclight_II_-_with_2_clips_-_flat.jpg.webp", "1,000 aUEC", 50, "Laser", "60 Round", "X", "300rpm", "30m", ["Default - 1,000 aUEC", "Alt Variants - 1,200 aUEC"], "Klaus & Werner Arclight Pistol", "Handguns"],
         ["Salvo Frag Pistol", "https://media.starcitizen.tools/thumb/b/b5/Salvo_Frag_-_Lying_flat_with_clip.jpg/2880px-Salvo_Frag_-_Lying_flat_with_clip.jpg.webp", "18,000 aUEC", 0, "Ballistic", "8 Round", ".50", "170rpm", "80m", ["Default - 18,000 aUEC"], "Hedeby Gunworks Salvo Frag Pistol", "Handguns"],
         ["Yubarev Pistol", "https://media.starcitizen.tools/thumb/4/4f/Yubarev_-_Deadeye_Skin_Flat.jpg/2560px-Yubarev_-_Deadeye_Skin_Flat.jpg.webp", "15,000 aUEC", 1, "Electron", "10 Round", "X", "350rpm", "35m", ["Default - 15,000 aUEC"], "Lightning Bolt Co. Yubarev Pistol", "Handguns"],
-        ["Coda Pistol", "https://media.starcitizen.tools/6/67/Coda_pistols_x2_lying_on_creat_with_mags_and_bullets.png", "1,200 aUEC", 50, "Ballistic", "6 Round", ".50", "180rpm", "100m", ["Default - 1,200 aUEC"], "Kastak Arms Coda Pistol", "Handguns"]
+        ["Coda Pistol", "https://media.starcitizen.tools/6/67/Coda_pistols_x2_lying_on_creat_with_mags_and_bullets.png", "1,200 aUEC", 50, "Ballistic", "6 Round", ".50", "180rpm", "100m", ["Default - 1,200 aUEC"], "Kastak Arms Coda Pistol", "Handguns"],
+
+        // Equipment
+        ["Pyro RYT Multi-Tool", "https://media.starcitizen.tools/9/91/Pyro_RYT_-_x2_on_black_background.png", "500 aUEC", 50, "Multi-Tool", "N/A", "N/A", "N/A", "N/A", ["Stock - 500 aUEC", "Bloodline - 100,000 aUEC", "Black Cherry - 100,000 aUEC", "Ghost - 100,000 aUEC", "Harvester - 100,000 aUEC", "Quicksilver - 100,000 aUEC", "Mirage - 100,000 aUEC", "MicroTech - 250,000 aUEC", "ArcCorp - 250,000 aUEC", "Crusader - 250,000 aUEC"], "Greycat Pyro RYT Multi-Tool", "Equipment"],
+        ["Tigersclaw", "https://media.starcitizen.tools/7/70/Cryptokey-Tigersclaw.jpg", "2,500 aUEC", 50, "Cryptokey", "N/A", "N/A", "N/A", "N/A", ["Stock - 2,500 aUEC"], "Blue Triangle Cryptokey", "Equipment"]
       ];
     
       const categoryGrids = {
@@ -404,75 +408,144 @@
         'Shotguns': document.getElementById('shotguns-grid'),
         'Assault Rifles': document.getElementById('assault-rifles-grid'),
         'Submachine Guns': document.getElementById('submachine-guns-grid'),
-        'Handguns': document.getElementById('handguns-grid')
+        'Handguns': document.getElementById('handguns-grid'),
+        'Equipment': document.getElementById('equipment-grid')
       };
 
-      weapons.forEach(([name, image, price, stock, damage, mag, cal, rate, range, variants, fullName, category]) => {
-        const card = document.createElement('div');
-        card.className = "rounded-lg overflow-hidden shadow-lg mb-8 border border-opacity-20 transition-all duration-300 hover:shadow-xl hover:border-opacity-40";
-        card.style.backgroundColor = "#1a1a1a";
-        card.style.borderColor = "#D3AF37";
+      // Function to render weapons with Google Sheets data
+      function renderWeapons() {
+        weapons.forEach(([name, image, price, stock, damage, mag, cal, rate, range, variants, fullName, category]) => {
+          // Get updated data from Google Sheets
+          const weaponData = getWeaponData(name);
+          let actualStock = stock;
+          let actualPrice = price;
+          let actualVariants = variants;
+
+          if (weaponData) {
+            actualStock = weaponData.totalStock;
+
+            // Skip this weapon entirely if it has no stock across all variants
+            if (actualStock === 0) {
+              return; // Don't render this weapon at all
+            }
+          }
+
+          const card = document.createElement('div');
+          card.className = "rounded-lg overflow-hidden shadow-lg mb-8 border border-opacity-20 transition-all duration-300 hover:shadow-xl hover:border-opacity-40";
+          card.style.backgroundColor = "#1a1a1a";
+          card.style.borderColor = "#D3AF37";
+
+          if (weaponData && weaponData.variants) {
+            // Build variants array from Google Sheets data (only show variants with stock > 0)
+            // Prioritize Stock/Default variants first
+            actualVariants = [];
+            let firstAvailablePrice = null;
+            let stockVariants = [];
+            let otherVariants = [];
+
+            // Separate Stock/Default variants from others
+            for (const [variantName, variantData] of Object.entries(weaponData.variants)) {
+              if (variantData.stock > 0) {
+                const displayPrice = variantData.averagePrice || variantData.sellPrice || 0;
+                const variantDisplay = `${variantName} - ${formatPrice(displayPrice)}`;
+
+                // Check if this is a Stock or Default variant
+                if (variantName.toLowerCase() === 'stock' || variantName.toLowerCase() === 'default') {
+                  stockVariants.push(variantDisplay);
+
+                  // Use Stock/Default variant price as main price if available
+                  if (firstAvailablePrice === null && displayPrice > 0) {
+                    firstAvailablePrice = displayPrice;
+                  }
+                } else {
+                  otherVariants.push(variantDisplay);
+                }
+              }
+            }
+
+            // Combine arrays with Stock/Default variants first
+            actualVariants = [...stockVariants, ...otherVariants];
+
+            // If no Stock/Default variant had a price, use the first available variant's price
+            if (firstAvailablePrice === null && actualVariants.length > 0) {
+              // Find the first variant with a price > 0
+              for (const [variantName, variantData] of Object.entries(weaponData.variants)) {
+                if (variantData.stock > 0) {
+                  const displayPrice = variantData.averagePrice || variantData.sellPrice || 0;
+                  if (displayPrice > 0) {
+                    firstAvailablePrice = displayPrice;
+                    break;
+                  }
+                }
+              }
+            }
+
+            // Use the determined price as the main price
+            if (firstAvailablePrice !== null) {
+              actualPrice = formatPrice(firstAvailablePrice);
+            }
+          }
+
+          let stockLabel = '';
+          let stockColor = '';
+          let stockTextColor = 'white';
+
+          if (actualStock === 0) {
+            stockLabel = 'No Stock';
+            stockColor = '#aa0000';
+          } else if (actualStock >= 1 && actualStock <= 4) {
+            stockLabel = 'Low Stock';
+            stockColor = '#dfde01';
+            stockTextColor = 'black';
+          } else {
+            stockLabel = 'In Stock';
+            stockColor = '#00aa00';
+          }
         
-        let stockLabel = '';
-        let stockColor = '';
-        let stockTextColor = 'white';
-        
-        if (stock === 0) {
-          stockLabel = 'No Stock';
-          stockColor = '#aa0000';
-        } else if (stock >= 1 && stock <= 4) {
-          stockLabel = 'Low Stock';
-          stockColor = '#dfde01';
-          stockTextColor = 'black';
-        } else {
-          stockLabel = 'In Stock';
-          stockColor = '#00aa00';
-        }
-        
-        card.innerHTML = `
-          <div class="flex border-b border-opacity-10" style="border-color: #D3AF37;">
-            <img src="${image}" alt="${name}" class="w-1/3 weapon-image cursor-pointer" loading="lazy" onclick="openImage(this.src)" />
-            <div class="p-8 w-2/3">
-              <h3 class="text-2xl font-light mb-2" style="color: #D3AF37;">${name}</h3>
-              <p class="text-sm font-light text-gray-400 mb-4">${fullName}</p>
+          card.innerHTML = `
+            <div class="flex border-b border-opacity-10" style="border-color: #D3AF37;">
+              <img src="${image}" alt="${name}" class="w-1/3 weapon-image cursor-pointer" loading="lazy" onclick="openImage(this.src)" />
+              <div class="p-8 w-2/3">
+                <h3 class="text-2xl font-light mb-2" style="color: #D3AF37;">${name}</h3>
+                <p class="text-sm font-light text-gray-400 mb-4">${fullName}</p>
+
+                <div class="mb-4">
+                  <span class="text-sm font-medium px-3 py-1 rounded-full" style="background-color: ${stockColor}; color: ${stockTextColor};">
+                    ${stockLabel}
+                  </span>
+                  ${actualStock > 0 ? `<span class="text-sm font-light text-gray-300 ml-2">${actualStock} remaining in stock</span>` : ''}
+                </div>
+
+                <div class="mb-6">
+                  <span class="text-xl font-light text-white">${actualPrice}</span>
+                </div>
               
-              <div class="mb-4">
-                <span class="text-sm font-medium px-3 py-1 rounded-full" style="background-color: ${stockColor}; color: ${stockTextColor};">
-                  ${stockLabel}
-                </span>
-                ${stock > 0 ? `<span class="text-sm font-light text-gray-300 ml-2">${stock} remaining in stock</span>` : ''}
-              </div>
-              
-              <div class="mb-6">
-                <span class="text-xl font-light text-white">${price}</span>
-              </div>
-              
-              <div class="flex space-x-4 mb-6">
-                <button class="px-4 py-2 text-sm font-light border border-opacity-30 rounded transition-all duration-300 hover:border-opacity-100" style="border-color: #D3AF37; color: white;" onmouseover="this.style.backgroundColor='#D3AF37'; this.style.color='#141414'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='white'" onclick="toggleDetails(this)">Details</button>
-                ${variants.length > 1 ? `
-                <button class="px-4 py-2 text-sm font-light border border-opacity-30 rounded transition-all duration-300 hover:border-opacity-100" style="border-color: #D3AF37; color: white;" onmouseover="this.style.backgroundColor='#D3AF37'; this.style.color='#141414'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='white'" onclick="toggleVariants(this)">Variants</button>
-                ` : ''}
-              </div>
-              
-              ${stock > 0 ? `
-              <div class="space-y-4 mb-6">
-                <div class="flex space-x-4">
-                  <div class="flex-1">
-                    <label class="block text-sm font-light mb-2" style="color: #D3AF37;">Variant:</label>
-                    <select class="variant-select w-full p-2 rounded text-white border border-opacity-30 focus:border-opacity-100 transition-all duration-300 font-light focus:outline-none" style="background-color: #1a1a1a; border-color: #D3AF37;">
-                      ${variants.map(v => `<option value="${v}">${v}</option>`).join('')}
-                    </select>
-                  </div>
-                  <div class="w-24">
-                    <label class="block text-sm font-light mb-2" style="color: #D3AF37;">Qty:</label>
-                    <input type="number" class="quantity-input w-full p-2 rounded text-white border border-opacity-30 focus:border-opacity-100 transition-all duration-300 font-light focus:outline-none" style="background-color: #1a1a1a; border-color: #D3AF37;" value="1" min="1" max="${stock}">
+                <div class="flex space-x-4 mb-6">
+                  <button class="px-4 py-2 text-sm font-light border border-opacity-30 rounded transition-all duration-300 hover:border-opacity-100" style="border-color: #D3AF37; color: white;" onmouseover="this.style.backgroundColor='#D3AF37'; this.style.color='#141414'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='white'" onclick="toggleDetails(this)">Details</button>
+                  ${actualVariants.length > 1 ? `
+                  <button class="px-4 py-2 text-sm font-light border border-opacity-30 rounded transition-all duration-300 hover:border-opacity-100" style="border-color: #D3AF37; color: white;" onmouseover="this.style.backgroundColor='#D3AF37'; this.style.color='#141414'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='white'" onclick="toggleVariants(this)">Variants</button>
+                  ` : ''}
+                </div>
+
+                ${actualStock > 0 ? `
+                <div class="space-y-4 mb-6">
+                  <div class="flex space-x-4">
+                    <div class="flex-1">
+                      <label class="block text-sm font-light mb-2" style="color: #D3AF37;">Variant:</label>
+                      <select class="variant-select w-full p-2 rounded text-white border border-opacity-30 focus:border-opacity-100 transition-all duration-300 font-light focus:outline-none" style="background-color: #1a1a1a; border-color: #D3AF37;" onchange="updateQuantityMax('${name}', this, this.parentElement.parentElement.querySelector('.quantity-input'))">
+                        ${actualVariants.map(v => `<option value="${v}">${v}</option>`).join('')}
+                      </select>
+                    </div>
+                    <div class="w-24">
+                      <label class="block text-sm font-light mb-2" style="color: #D3AF37;">Qty:</label>
+                      <input type="number" class="quantity-input w-full p-2 rounded text-white border border-opacity-30 focus:border-opacity-100 transition-all duration-300 font-light focus:outline-none" style="background-color: #1a1a1a; border-color: #D3AF37;" value="1" min="1" max="${actualStock}" data-weapon-name="${name}" onchange="validateQuantity(this)">
+                    </div>
                   </div>
                 </div>
-              </div>
-              <button class="w-full py-3 text-sm font-medium rounded transition-all duration-300" style="background-color: #D3AF37; color: #141414;" onmouseover="this.style.backgroundColor='#b8941f'" onmouseout="this.style.backgroundColor='#D3AF37'" onclick="addToCart('${name}', '${fullName}', this)">Add to Cart</button>
-              ` : `
-              <button class="w-full py-3 text-sm font-medium rounded transition-all duration-300 bg-gray-600 text-gray-400 cursor-not-allowed" disabled>Out of Stock</button>
-              `}
+                <button class="w-full py-3 text-sm font-medium rounded transition-all duration-300" style="background-color: #D3AF37; color: #141414;" onmouseover="this.style.backgroundColor='#b8941f'" onmouseout="this.style.backgroundColor='#D3AF37'" onclick="addToCart('${name}', '${fullName}', this)">Add to Cart</button>
+                ` : `
+                <button class="w-full py-3 text-sm font-medium rounded transition-all duration-300 bg-gray-600 text-gray-400 cursor-not-allowed" disabled>Out of Stock</button>
+                `}
               
               <div class="details hidden mt-6 pt-6 border-t border-opacity-10 text-sm font-light space-y-2" style="border-color: #D3AF37;">
                 <p style="color: #D3AF37;" class="font-medium mb-3">Weapon Details:</p>
@@ -485,188 +558,28 @@
                 </div>
               </div>
               
-              <div class="variants hidden mt-6 pt-6 border-t border-opacity-10 text-sm font-light space-y-2" style="border-color: #D3AF37;">
-                <p style="color: #D3AF37;" class="font-medium mb-3">Available Variants:</p>
-                ${variants.map(v => `<p class="text-gray-300">${v}</p>`).join('')}
+                <div class="variants hidden mt-6 pt-6 border-t border-opacity-10 text-sm font-light space-y-2" style="border-color: #D3AF37;">
+                  <p style="color: #D3AF37;" class="font-medium mb-3">Available Variants:</p>
+                  ${actualVariants.map(v => `<p class="text-gray-300">${v}</p>`).join('')}
+                </div>
               </div>
             </div>
-          </div>
-        `;
-        
-        const targetGrid = categoryGrids[category];
-        if (targetGrid) {
-          targetGrid.appendChild(card);
-        }
-      });
+          `;
+
+          const targetGrid = categoryGrids[category];
+          if (targetGrid) {
+            targetGrid.appendChild(card);
+          }
+        });
+      }
+
+      // Call renderWeapons initially and after data updates
+      renderWeapons();
     </script>
-  </section>
-
-  <section id="equipment" class="py-16 px-4" style="background-color: #141414;">
-    <h2 class="text-3xl font-light mb-8" style="color: #D3AF37;">Equipment</h2>
-
-    <div class="space-y-6">
-      <!-- Tigersclaw -->
-      <div class="rounded-lg overflow-hidden shadow-lg mb-8 border border-opacity-20 transition-all duration-300 hover:shadow-xl hover:border-opacity-40" style="background-color: #1a1a1a; border-color: #D3AF37;">
-        <div class="flex border-b border-opacity-10" style="border-color: #D3AF37;">
-          <img src="https://media.starcitizen.tools/7/70/Cryptokey-Tigersclaw.jpg" alt="Tigersclaw" class="w-1/3 object-cover cursor-pointer" loading="lazy" onclick="openImage(this.src)" />
-          <div class="p-8 w-2/3">
-            <h3 class="text-2xl font-light mb-2" style="color: #D3AF37;">Tigersclaw</h3>
-            <p class="text-sm font-light text-gray-400 mb-4">Blue Triangle Cryptokey</p>
-
-            <div class="mb-4">
-              <span class="text-sm font-medium px-3 py-1 rounded-full" style="background-color: #00aa00; color: white;">
-                In Stock
-              </span>
-              <span class="text-sm font-light text-gray-300 ml-2">50+ remaining in stock</span>
-            </div>
-
-            <div class="mb-6">
-              <span class="text-xl font-light text-white">5,000 aUEC</span>
-            </div>
-
-            <div class="flex space-x-4 mb-6">
-              <button class="px-4 py-2 text-sm font-light border border-opacity-30 rounded transition-all duration-300 hover:border-opacity-100" style="border-color: #D3AF37; color: white;" onmouseover="this.style.backgroundColor='#D3AF37'; this.style.color='#141414'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='white'" onclick="toggleDetails(this)">Details</button>
-            </div>
-
-            <div class="space-y-4 mb-6">
-              <div class="flex space-x-4">
-                <div class="flex-1">
-                  <label class="block text-sm font-light mb-2" style="color: #D3AF37;">Variant:</label>
-                  <select class="variant-select w-full p-2 rounded text-white border border-opacity-30 focus:border-opacity-100 transition-all duration-300 font-light focus:outline-none" style="background-color: #1a1a1a; border-color: #D3AF37;">
-                    <option value="Default - 5,000 aUEC">Default - 5,000 aUEC</option>
-                  </select>
-                </div>
-                <div class="w-24">
-                  <label class="block text-sm font-light mb-2" style="color: #D3AF37;">Qty:</label>
-                  <input type="number" class="quantity-input w-full p-2 rounded text-white border border-opacity-30 focus:border-opacity-100 transition-all duration-300 font-light focus:outline-none" style="background-color: #1a1a1a; border-color: #D3AF37;" value="1" min="1" max="50">
-                </div>
-              </div>
-            </div>
-            <button class="w-full py-3 text-sm font-medium rounded transition-all duration-300" style="background-color: #D3AF37; color: #141414;" onmouseover="this.style.backgroundColor='#b8941f'" onmouseout="this.style.backgroundColor='#D3AF37'" onclick="addToCart('Tigersclaw', 'Blue Triangle Cryptokey', this)">Add to Cart</button>
-
-            <div class="details hidden mt-6 pt-6 border-t border-opacity-10 text-sm font-light space-y-2" style="border-color: #D3AF37;">
-              <p style="color: #D3AF37;" class="font-medium mb-3">Equipment Details:</p>
-              <div class="text-gray-300 space-y-2">
-                <p><strong>Duration Multiplier:</strong> 75%</p>
-                <p><strong>Error Chance:</strong> 50%</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Pyro RYT Multi-Tool -->
-      <div class="rounded-lg overflow-hidden shadow-lg mb-8 border border-opacity-20 transition-all duration-300 hover:shadow-xl hover:border-opacity-40" style="background-color: #1a1a1a; border-color: #D3AF37;">
-        <div class="flex border-b border-opacity-10" style="border-color: #D3AF37;">
-          <img src="https://media.starcitizen.tools/9/91/Pyro_RYT_-_x2_on_black_background.png" alt="Pyro RYT Multi-Tool" class="w-1/3 object-cover cursor-pointer" loading="lazy" onclick="openImage(this.src)" />
-          <div class="p-8 w-2/3">
-            <h3 class="text-2xl font-light mb-2" style="color: #D3AF37;">Pyro RYT Multi-Tool</h3>
-            <p class="text-sm font-light text-gray-400 mb-4">Greycat Pyro RYT Multi-Tool</p>
-
-            <div class="mb-4">
-              <span class="text-sm font-medium px-3 py-1 rounded-full" style="background-color: #dfde01; color: black;">
-                Low Stock
-              </span>
-              <span class="text-sm font-light text-gray-300 ml-2">5 remaining in stock</span>
-            </div>
-
-            <div class="mb-6">
-              <span class="text-xl font-light text-white">Per Variant</span>
-            </div>
-
-            <div class="flex space-x-4 mb-6">
-              <button class="px-4 py-2 text-sm font-light border border-opacity-30 rounded transition-all duration-300 hover:border-opacity-100" style="border-color: #D3AF37; color: white;" onmouseover="this.style.backgroundColor='#D3AF37'; this.style.color='#141414'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='white'" onclick="toggleVariants(this)">Variants</button>
-            </div>
-
-            <div class="space-y-4 mb-6">
-              <div class="flex space-x-4">
-                <div class="flex-1">
-                  <label class="block text-sm font-light mb-2" style="color: #D3AF37;">Variant:</label>
-                  <select class="variant-select w-full p-2 rounded text-white border border-opacity-30 focus:border-opacity-100 transition-all duration-300 font-light focus:outline-none" style="background-color: #1a1a1a; border-color: #D3AF37;">
-                    <option value="Stock - 15,000 aUEC">Stock - 15,000 aUEC</option>
-                    <option value="Mirage - 18,000 aUEC">Mirage - 18,000 aUEC</option>
-                    <option value="Ghost - 18,000 aUEC">Ghost - 18,000 aUEC</option>
-                    <option value="Harvester - 18,000 aUEC">Harvester - 18,000 aUEC</option>
-                    <option value="Bloodline - 20,000 aUEC">Bloodline - 20,000 aUEC</option>
-                    <option value="Black Cherry - 20,000 aUEC">Black Cherry - 20,000 aUEC</option>
-                    <option value="Quicksilver - 22,000 aUEC">Quicksilver - 22,000 aUEC</option>
-                  </select>
-                </div>
-                <div class="w-24">
-                  <label class="block text-sm font-light mb-2" style="color: #D3AF37;">Qty:</label>
-                  <input type="number" class="quantity-input w-full p-2 rounded text-white border border-opacity-30 focus:border-opacity-100 transition-all duration-300 font-light focus:outline-none" style="background-color: #1a1a1a; border-color: #D3AF37;" value="1" min="1" max="5">
-                </div>
-              </div>
-            </div>
-            <button class="w-full py-3 text-sm font-medium rounded transition-all duration-300" style="background-color: #D3AF37; color: #141414;" onmouseover="this.style.backgroundColor='#b8941f'" onmouseout="this.style.backgroundColor='#D3AF37'" onclick="addToCart('Pyro RYT Multi-Tool', 'Greycat Pyro RYT Multi-Tool', this)">Add to Cart</button>
-
-            <div class="variants hidden mt-6 pt-6 border-t border-opacity-10 text-sm font-light space-y-2" style="border-color: #D3AF37;">
-              <p style="color: #D3AF37;" class="font-medium mb-3">Available Variants:</p>
-              <div class="text-gray-300 space-y-1">
-                <p>Stock - 15,000 aUEC</p>
-                <p>Mirage - 18,000 aUEC</p>
-                <p>Ghost - 18,000 aUEC</p>
-                <p>Harvester - 18,000 aUEC</p>
-                <p>Bloodline - 20,000 aUEC</p>
-                <p>Black Cherry - 20,000 aUEC</p>
-                <p>Quicksilver - 22,000 aUEC</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
 
   <!-- Image Modal -->
   <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
     <img id="modalImage" src="" class="max-h-[90%] max-w-[90%] rounded shadow-lg" />
-  </div>
-
-  <!-- Order Success Modal -->
-  <div id="order-success-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
-    <div class="rounded-lg p-8 max-w-md w-full mx-4 border border-opacity-30" style="background-color: #1a1a1a; border-color: #D3AF37;">
-      <div class="text-center">
-        <div class="text-6xl mb-4">🎉</div>
-        <h2 class="text-2xl font-light mb-4" style="color: #D3AF37;">Order Placed Successfully!</h2>
-
-        <div class="mb-6">
-          <p class="text-gray-300 mb-2">Your Order ID:</p>
-          <p id="success-order-id" class="text-xl font-mono px-4 py-2 rounded border border-opacity-30" style="background-color: #141414; border-color: #D3AF37; color: #D3AF37;"></p>
-        </div>
-
-        <div class="mb-6 text-left text-sm text-gray-300">
-          <p class="mb-2"><strong style="color: #D3AF37;">What happens next?</strong></p>
-          <div class="ml-2 space-y-2">
-            <p>✔️ We'll ping you on Discord when it's ready to collect</p>
-            <p>✔️ Track your order status anytime using the link below</p>
-            <p>✔️ Download your receipt for your records (optional)</p>
-          </div>
-        </div>
-
-        <div class="space-y-3">
-          <button id="download-receipt-btn" class="w-full py-3 px-6 rounded font-medium transition-all duration-300"
-                  style="background-color: #D3AF37; color: #141414;"
-                  onmouseover="this.style.backgroundColor='#b8941f'"
-                  onmouseout="this.style.backgroundColor='#D3AF37'">
-            📄 Download Receipt
-          </button>
-
-          <a href="order-status.html" class="block w-full py-3 px-6 rounded font-medium border border-opacity-30 transition-all duration-300 text-center"
-             style="border-color: #D3AF37; color: #D3AF37; background-color: transparent; text-decoration: none;"
-             onmouseover="this.style.backgroundColor='#D3AF37'; this.style.color='#141414'"
-             onmouseout="this.style.backgroundColor='transparent'; this.style.color='#D3AF37'">
-            🔍 Track Your Order
-          </a>
-
-          <button onclick="closeOrderSuccessModal()" class="w-full py-3 px-6 rounded font-medium text-gray-400 hover:text-white transition-all duration-300"
-                  style="background-color: transparent;">
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
   </div>
 
   <!-- Cart Sidebar -->
@@ -767,8 +680,429 @@
       SHEET_ID: '1nOJrh5M9wsw4cIz3MRBSfOKrfFIdOGcVwPwMKpo9u-s',
       // Google Apps Script Web App URL (NEW CLEAN DEPLOYMENT)
       APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbz8jN8tITpiH1d3Ow-pIgqHo_mpw9Yrtg3VupVYmbowDfloInM6WPHIj5r-plzprh95qw/exec',
-      RANGE: 'Orders!A:M'
+      RANGE: 'Orders!A:N',
+      WEAPONS_RANGE: 'Handheld Weapons!A:I',
+      API_KEY: 'AIzaSyAHPBwiyIDWOa5nrewQJDOOq_9wlHe3Bsc'
     };
+
+    // Weapon data cache
+    window.weaponData = null;
+    window.weaponPriceData = null;
+    window.lastWeaponDataUpdate = null;
+
+    // Fetch weapon data from Google Sheets
+    async function fetchWeaponData() {
+      try {
+        console.log('Fetching weapon data from Google Sheets...');
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${window.GOOGLE_SHEETS_CONFIG.SHEET_ID}/values/${window.GOOGLE_SHEETS_CONFIG.WEAPONS_RANGE}?key=${window.GOOGLE_SHEETS_CONFIG.API_KEY}`;
+
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (!data.values || data.values.length < 2) {
+          throw new Error('No weapon data found in sheet');
+        }
+
+        // Parse the data (skip header row)
+        const weaponPrices = {};
+        const headers = data.values[0];
+
+        // Expected columns: Name, Type, Varient, Stock, Buy in Game, (empty), Sell Price, Average Price, Buy Price
+        for (let i = 1; i < data.values.length; i++) {
+          const row = data.values[i];
+          if (row.length < 4) continue; // Skip incomplete rows
+
+          const name = row[0];
+          const type = row[1];
+          const variant = row[2];
+          const stock = parseInt(row[3]) || 0;
+          const buyInGame = row[4] === 'TRUE';
+          const sellPrice = parseInt(row[6]) || 0;
+          const averagePrice = parseInt(row[7]) || 0;
+          const buyPrice = parseInt(row[8]) || 0;
+
+          // Create weapon key
+          const weaponKey = `${name}`;
+
+          if (!weaponPrices[weaponKey]) {
+            weaponPrices[weaponKey] = {
+              name: name,
+              type: type,
+              variants: {},
+              totalStock: 0
+            };
+          }
+
+          // Add variant data
+          weaponPrices[weaponKey].variants[variant] = {
+            stock: stock,
+            buyInGame: buyInGame,
+            sellPrice: sellPrice,
+            averagePrice: averagePrice,
+            buyPrice: buyPrice
+          };
+
+          // Add to total stock if available
+          if (stock > 0) {
+            weaponPrices[weaponKey].totalStock += stock;
+          }
+        }
+
+        window.weaponPriceData = weaponPrices;
+        window.lastWeaponDataUpdate = new Date();
+
+        console.log('Weapon data loaded:', Object.keys(weaponPrices).length, 'weapons');
+        console.log('Sample weapon data:', weaponPrices[Object.keys(weaponPrices)[0]]);
+
+        // Update price display
+        updatePriceUpdateDate();
+
+        return weaponPrices;
+
+      } catch (error) {
+        console.error('Error fetching weapon data:', error);
+        showToast('Failed to load weapon prices from Google Sheets', 'error');
+        return null;
+      }
+    }
+
+    // Update the price update date display
+    function updatePriceUpdateDate() {
+      const dateElement = document.getElementById('price-update-date');
+      if (dateElement && window.lastWeaponDataUpdate) {
+        dateElement.textContent = window.lastWeaponDataUpdate.toLocaleDateString();
+      }
+    }
+
+    // Get weapon price and stock data
+    function getWeaponData(weaponName, variant = null) {
+      if (!window.weaponPriceData) {
+        return null;
+      }
+
+      // Clean the weapon name - remove common suffixes like "LMG", "SMG", "Rifle", etc.
+      const cleanWeaponName = weaponName
+        .replace(/\s+(LMG|SMG|Rifle|Pistol|Shotgun|Sniper Rifle|Marksman Rifle|Assault Rifle|Submachine Gun|Light Machine Gun)$/i, '')
+        .trim();
+
+      // Try exact match with cleaned name first
+      let weaponData = window.weaponPriceData[cleanWeaponName];
+
+      // If not found, try exact match with original name
+      if (!weaponData) {
+        weaponData = window.weaponPriceData[weaponName];
+      }
+
+      // If still not found, try partial matches
+      if (!weaponData) {
+        const keys = Object.keys(window.weaponPriceData);
+        const matchingKey = keys.find(key =>
+          key.toLowerCase().includes(cleanWeaponName.toLowerCase()) ||
+          cleanWeaponName.toLowerCase().includes(key.toLowerCase()) ||
+          key.toLowerCase().includes(weaponName.toLowerCase()) ||
+          weaponName.toLowerCase().includes(key.toLowerCase())
+        );
+
+        if (matchingKey) {
+          weaponData = window.weaponPriceData[matchingKey];
+        }
+      }
+
+      if (!weaponData) {
+        return null;
+      }
+
+      // If specific variant requested, return that variant's data
+      if (variant) {
+        const variantData = weaponData.variants[variant] || weaponData.variants['Stock'] || weaponData.variants['Default'];
+
+        if (!variantData) {
+          return null;
+        }
+
+        return {
+          name: weaponData.name,
+          type: weaponData.type,
+          totalStock: weaponData.totalStock,
+          variant: {
+            name: variant,
+            stock: variantData.stock,
+            buyInGame: variantData.buyInGame,
+            sellPrice: variantData.sellPrice,
+            averagePrice: variantData.averagePrice,
+            buyPrice: variantData.buyPrice
+          }
+        };
+      }
+
+      // Return all weapon data including all variants
+      return {
+        name: weaponData.name,
+        type: weaponData.type,
+        totalStock: weaponData.totalStock,
+        variants: weaponData.variants
+      };
+    }
+
+    // Format price for display
+    function formatPrice(price) {
+      if (!price || price === 0) {
+        return 'Contact for Price';
+      }
+      return `${price.toLocaleString()} aUEC`;
+    }
+
+    // Show toast notification
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast-notification');
+      const messageElement = document.getElementById('toast-message');
+
+      if (toast && messageElement) {
+        messageElement.textContent = message;
+
+        // Update styling based on type
+        if (type === 'error') {
+          toast.style.backgroundColor = '#aa0000';
+          toast.style.color = 'white';
+        } else {
+          toast.style.backgroundColor = '#D3AF37';
+          toast.style.color = '#141414';
+        }
+
+        // Show toast
+        toast.style.transform = 'translateX(0)';
+
+        // Hide after 3 seconds
+        setTimeout(() => {
+          toast.style.transform = 'translateX(100%)';
+        }, 3000);
+      }
+    }
+
+    // Get stock for specific weapon variant
+    function getVariantStock(weaponName, variantName) {
+      const weaponData = getWeaponData(weaponName);
+      if (!weaponData || !weaponData.variants) {
+        return null;
+      }
+
+      // Clean variant name (remove price part if present)
+      const cleanVariantName = variantName.split(' - ')[0].trim();
+
+      const variantData = weaponData.variants[cleanVariantName];
+      return variantData ? variantData.stock : null;
+    }
+
+    // Validate quantity input against variant stock
+    function validateQuantity(input) {
+      const weaponName = input.getAttribute('data-weapon-name');
+      const variantSelect = input.parentElement.parentElement.querySelector('.variant-select');
+      const selectedVariant = variantSelect ? variantSelect.value : 'Stock';
+
+      const variantStock = getVariantStock(weaponName, selectedVariant);
+      const requestedQuantity = parseInt(input.value) || 1;
+
+      if (variantStock !== null && requestedQuantity > variantStock) {
+        input.value = variantStock;
+        input.style.borderColor = '#ff0000';
+        showToast(`Only ${variantStock} ${weaponName} (${selectedVariant.split(' - ')[0]}) in stock!`, 'error');
+
+        // Reset border color after 3 seconds
+        setTimeout(() => {
+          input.style.borderColor = '#D3AF37';
+        }, 3000);
+      } else {
+        input.style.borderColor = '#D3AF37';
+      }
+    }
+
+    // Update quantity max when variant changes
+    function updateQuantityMax(weaponName, variantSelect, quantityInput) {
+      const selectedVariant = variantSelect.value;
+      const variantStock = getVariantStock(weaponName, selectedVariant);
+
+      if (variantStock !== null) {
+        quantityInput.max = variantStock;
+
+        // If current quantity exceeds new max, reduce it
+        if (parseInt(quantityInput.value) > variantStock) {
+          quantityInput.value = variantStock;
+        }
+      }
+    }
+
+    // Validate entire cart against current stock levels
+    function validateCartStock() {
+      const stockIssues = [];
+
+      for (let i = 0; i < cart.length; i++) {
+        const item = cart[i];
+        const variantStock = getVariantStock(item.name, item.variant);
+
+        if (variantStock !== null && item.quantity > variantStock) {
+          stockIssues.push({
+            index: i,
+            item: item,
+            availableStock: variantStock,
+            requestedQuantity: item.quantity
+          });
+        }
+      }
+
+      return stockIssues;
+    }
+
+    // Fix cart stock issues automatically
+    function fixCartStockIssues() {
+      const stockIssues = validateCartStock();
+      let fixedItems = [];
+
+      for (const issue of stockIssues) {
+        const oldQuantity = issue.item.quantity;
+        cart[issue.index].quantity = issue.availableStock;
+
+        fixedItems.push(`${issue.item.name} (${issue.item.variant}): ${oldQuantity} → ${issue.availableStock}`);
+      }
+
+      if (fixedItems.length > 0) {
+        updateCartCount();
+        renderCartSidebar();
+        showToast(`🔧 Fixed stock issues:\n${fixedItems.join('\n')}`, 'error');
+        return true;
+      }
+
+      return false;
+    }
+
+    // Get dynamic price for Specialist Medrunner Loadout variants
+    function getMedrunnerLoadoutPrice(variantName) {
+      const weaponMapping = {
+        'Scout': 'P8-SC',
+        'Shotgun': 'BR-2',
+        'Heavy': 'FS-9',
+        'Marksman': 'P8-AR',
+        'Sniper': 'P6-LR'
+      };
+
+      const weaponName = weaponMapping[variantName];
+      if (!weaponName) {
+        return 20000; // Base price if weapon not found
+      }
+
+      // Get weapon data from Google Sheets
+      const weaponData = getWeaponData(weaponName);
+      if (weaponData && weaponData.variants) {
+        // Get the Stock variant price (or first available variant)
+        const stockVariant = weaponData.variants['Stock'] || Object.values(weaponData.variants)[0];
+        if (stockVariant) {
+          const weaponPrice = stockVariant.averagePrice || stockVariant.sellPrice || 0;
+          return weaponPrice + 20000; // Weapon price + 20,000 aUEC
+        }
+      }
+
+      // Fallback to hardcoded prices if Google Sheets data not available
+      const fallbackPrices = {
+        'Scout': 23300,    // P8-SC (3,300) + 20,000
+        'Shotgun': 26000,  // BR-2 (6,000) + 20,000
+        'Heavy': 40000,    // FS-9 (20,000) + 20,000
+        'Marksman': 520000, // P8-AR (500,000) + 20,000
+        'Sniper': 320000   // P6-LR (300,000) + 20,000
+      };
+
+      return fallbackPrices[variantName] || 20000;
+    }
+
+    // Update Medrunner Loadout pricing dynamically
+    function updateMedrunnerLoadoutPricing() {
+      const medrunnerSelect = document.querySelector('#medrunner-variant-select');
+      const medrunnerPriceDisplay = document.querySelector('#medrunner-price-display');
+
+      if (medrunnerSelect && medrunnerPriceDisplay) {
+        // Update all options with dynamic pricing
+        const variants = ['Scout', 'Shotgun', 'Heavy', 'Marksman', 'Sniper'];
+        let minPrice = Infinity;
+        let maxPrice = 0;
+
+        medrunnerSelect.innerHTML = '';
+
+        variants.forEach(variant => {
+          const price = getMedrunnerLoadoutPrice(variant);
+          const formattedPrice = formatPrice(price);
+
+          minPrice = Math.min(minPrice, price);
+          maxPrice = Math.max(maxPrice, price);
+
+          const option = document.createElement('option');
+          option.value = `${variant} - ${formattedPrice}`;
+          option.textContent = `${variant} - ${formattedPrice}`;
+          medrunnerSelect.appendChild(option);
+        });
+
+        // Update price range display
+        medrunnerPriceDisplay.innerHTML = `
+          <span class="text-xl font-light text-white">${formatPrice(minPrice)} - ${formatPrice(maxPrice)}</span>
+          <span class="text-sm font-light text-gray-400 ml-2">Depending on loadout</span>
+        `;
+      }
+    }
+
+    // Update stock levels after purchase (this would need to be implemented in Google Apps Script)
+    async function updateWeaponStock(weaponName, variant, quantityPurchased) {
+      try {
+        // This would require a new endpoint in your Google Apps Script
+        // For now, we'll just refresh the data to get updated stock levels
+        console.log(`Stock update needed: ${weaponName} (${variant}) - ${quantityPurchased} units`);
+
+        // Refresh weapon data after a short delay to allow for processing
+        setTimeout(async () => {
+          await fetchWeaponData();
+          // Re-render weapons with updated data
+          Object.values(categoryGrids).forEach(grid => {
+            if (grid) grid.innerHTML = '';
+          });
+          renderWeapons();
+
+          // Update Medrunner Loadout pricing after weapon data refresh
+          updateMedrunnerLoadoutPricing();
+        }, 2000);
+
+      } catch (error) {
+        console.error('Error updating weapon stock:', error);
+      }
+    }
+
+    // Initialize weapon data on page load
+    document.addEventListener('DOMContentLoaded', async function() {
+      console.log('Page loaded, fetching weapon data...');
+      await fetchWeaponData();
+
+      // Clear existing weapon grids and re-render with updated data
+      Object.values(categoryGrids).forEach(grid => {
+        if (grid) grid.innerHTML = '';
+      });
+      renderWeapons();
+
+      // Update Medrunner Loadout pricing
+      updateMedrunnerLoadoutPricing();
+
+      // Refresh weapon data every 5 minutes
+      setInterval(async () => {
+        await fetchWeaponData();
+        // Re-render weapons with updated data
+        Object.values(categoryGrids).forEach(grid => {
+          if (grid) grid.innerHTML = '';
+        });
+        renderWeapons();
+
+        // Update Medrunner Loadout pricing after data refresh
+        updateMedrunnerLoadoutPricing();
+      }, 5 * 60 * 1000);
+    });
+
+    window.weaponDataLoaded = false;
 
     function openImage(src) {
       const modal = document.getElementById('imageModal');
@@ -804,27 +1138,37 @@
       const card = button.closest('.rounded-lg');
       const variantSelect = card.querySelector('.variant-select');
       const quantityInput = card.querySelector('.quantity-input');
-      
+
       if (!variantSelect || !quantityInput) {
         console.error('Could not find variant select or quantity input');
         return;
       }
-      
+
       const variant = variantSelect.value;
       const quantity = parseInt(quantityInput.value);
 
-      // Validate quantity - prevent negative or zero quantities
-      if (quantity < 1 || isNaN(quantity)) {
-        alert('Please enter a valid quantity (minimum 1)');
-        quantityInput.value = 1;
-        return;
-      }
-
       const [variantName, variantPrice] = variant.split(' - ');
       const price = variantPrice;
-      
+
+      // Check variant stock before adding to cart
+      const variantStock = getVariantStock(name, variantName);
       const existingItem = cart.find(item => item.name === name && item.variant === variantName);
-      
+      const currentCartQuantity = existingItem ? existingItem.quantity : 0;
+      const totalRequestedQuantity = currentCartQuantity + quantity;
+
+      if (variantStock !== null && totalRequestedQuantity > variantStock) {
+        const availableQuantity = Math.max(0, variantStock - currentCartQuantity);
+
+        if (availableQuantity === 0) {
+          showToast(`❌ ${name} (${variantName}) is already at maximum stock in your cart!`, 'error');
+          return;
+        } else {
+          showToast(`⚠️ Only ${availableQuantity} more ${name} (${variantName}) available. Adding ${availableQuantity} instead of ${quantity}.`, 'error');
+          quantityInput.value = availableQuantity;
+          quantity = availableQuantity;
+        }
+      }
+
       if (existingItem) {
         existingItem.quantity += quantity;
       } else {
@@ -836,7 +1180,7 @@
           quantity
         });
       }
-      
+
       updateCartCount();
       renderCartSidebar();
       showToast(`Added ${quantity}x ${name} (${variantName}) to cart!`);
@@ -852,18 +1196,24 @@
       if (newQuantity <= 0) {
         removeFromCart(index);
       } else {
-        cart[index].quantity = newQuantity;
+        const item = cart[index];
+        const variantStock = getVariantStock(item.name, item.variant);
+
+        // Validate against stock
+        if (variantStock !== null && newQuantity > variantStock) {
+          showToast(`❌ Only ${variantStock} ${item.name} (${item.variant}) in stock!`, 'error');
+          cart[index].quantity = variantStock;
+        } else {
+          cart[index].quantity = newQuantity;
+        }
+
         updateCartCount();
         renderCartSidebar();
       }
     }
 
     function parsePrice(priceStr) {
-      if (priceStr.toLowerCase() === '0') {
-        return 0;
-      }
-      const numericValue = parseInt(priceStr.replace(/[^\d]/g, ''));
-      return isNaN(numericValue) ? 0 : numericValue;
+      return parseInt(priceStr.replace(/[^\d]/g, ''));
     }
 
     function formatPrice(price) {
@@ -917,20 +1267,27 @@
       cartItems.innerHTML = cart.map((item, index) => {
         const itemPrice = parsePrice(item.price);
         const itemTotal = itemPrice * item.quantity;
+        const variantStock = getVariantStock(item.name, item.variant);
+
+        // Check if quantity exceeds stock
+        const isOverStock = variantStock !== null && item.quantity > variantStock;
+        const stockWarning = isOverStock ? `⚠️ Only ${variantStock} in stock!` : '';
+        const stockInfo = variantStock !== null ? `(${variantStock} available)` : '';
 
         return `
-          <div class="bg-gray-700 p-3 rounded-lg">
+          <div class="bg-gray-700 p-3 rounded-lg ${isOverStock ? 'border border-red-500' : ''}">
             <div class="mb-2">
               <h3 class="font-bold text-sm">${item.name}</h3>
               <p class="text-xs text-gray-300">${item.fullName}</p>
-              <p class="text-xs">Variant: ${item.variant}</p>
+              <p class="text-xs">Variant: ${item.variant} ${stockInfo}</p>
               <p class="text-xs">Price: ${item.price}</p>
+              ${stockWarning ? `<p class="text-xs text-red-400">${stockWarning}</p>` : ''}
             </div>
             <div class="flex justify-between items-center">
               <div class="flex items-center space-x-2">
                 <button onclick="updateQuantity(${index}, ${item.quantity - 1})" class="bg-red-600 px-2 py-1 rounded hover:bg-red-500 text-xs">-</button>
-                <span class="text-sm">${item.quantity}</span>
-                <button onclick="updateQuantity(${index}, ${item.quantity + 1})" class="bg-green-600 px-2 py-1 rounded hover:bg-green-500 text-xs">+</button>
+                <span class="text-sm ${isOverStock ? 'text-red-400' : ''}">${item.quantity}</span>
+                <button onclick="updateQuantity(${index}, ${item.quantity + 1})" class="bg-green-600 px-2 py-1 rounded hover:bg-green-500 text-xs" ${variantStock !== null && item.quantity >= variantStock ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>+</button>
               </div>
               <div class="text-right">
                 <p class="font-semibold text-sm">${formatPrice(itemTotal)}</p>
@@ -971,6 +1328,28 @@
       if (cart.length === 0) {
         alert('Your cart is empty!');
         return;
+      }
+
+      // Validate stock levels before proceeding
+      const stockIssues = validateCartStock();
+      if (stockIssues.length > 0) {
+        const issueMessages = stockIssues.map(issue =>
+          `• ${issue.item.name} (${issue.item.variant}): Requesting ${issue.requestedQuantity}, only ${issue.availableStock} available`
+        );
+
+        const userChoice = confirm(
+          `⚠️ STOCK ISSUES DETECTED:\n\n${issueMessages.join('\n')}\n\n` +
+          `Click OK to automatically fix these issues and continue checkout.\n` +
+          `Click Cancel to review your cart manually.`
+        );
+
+        if (userChoice) {
+          fixCartStockIssues();
+          // Continue with checkout after fixing issues
+        } else {
+          showToast('Please review your cart and adjust quantities.', 'error');
+          return;
+        }
       }
 
       // Clear any previous error highlighting
@@ -1041,69 +1420,40 @@
       const orderId = `SA-${currentTimestamp}`;
 
       // Create full receipt for file download
-      let fullReceipt = `===============================================\n`;
-      fullReceipt += `           THE SERAPH ARMORY\n`;
-      fullReceipt += `        Star Citizen Equipment Store\n`;
-      fullReceipt += `===============================================\n\n`;
-
-      fullReceipt += `RECEIPT FOR: ${discordUsername.value.trim()}\n`;
-      fullReceipt += `ORDER ID: ${orderId}\n`;
-      fullReceipt += `DATE: ${currentDate}\n`;
-      fullReceipt += `STATUS: Received\n\n`;
-
-      fullReceipt += `-----------------------------------------------\n`;
-      fullReceipt += `PURCHASED ITEMS:\n`;
-      fullReceipt += `-----------------------------------------------\n`;
-
+      let fullReceipt = `## Receipt for @${discordUsername.value.trim()}\n`;
+      fullReceipt += `**Order ID:** ${orderId}\n`;
+      fullReceipt += `**Order Placed at:** <t:${currentTimestamp}:F>\n`;
+      fullReceipt += `**Order Started at:**\n`;
+      fullReceipt += `**Order Completed at:**\n\n`;
+      
+      fullReceipt += `### Purchased Items:\n`;
+      
       cart.forEach((item, index) => {
         const itemPrice = parsePrice(item.price);
         const itemTotal = itemPrice * item.quantity;
-
+        
         fullReceipt += `${index + 1}. ${item.name}`;
         if (item.variant && item.variant !== 'Default') {
           fullReceipt += ` (${item.variant})`;
         }
         fullReceipt += `\n`;
-        fullReceipt += `   Quantity: ${item.quantity}\n`;
-        fullReceipt += `   Unit Price: ${formatPrice(itemPrice)}\n`;
-        fullReceipt += `   Item Total: ${formatPrice(itemTotal)}\n\n`;
+        fullReceipt += `   - **Quantity:** ${item.quantity}\n`;
+        fullReceipt += `   - **Unit Price:** ${formatPrice(itemPrice)}\n`;
+        fullReceipt += `   - **Total Cost:** ${formatPrice(itemTotal)}\n\n`;
       });
-
-      fullReceipt += `-----------------------------------------------\n`;
-      fullReceipt += `TRANSACTION SUMMARY:\n`;
-      fullReceipt += `-----------------------------------------------\n`;
-      fullReceipt += `Subtotal:        ${formatPrice(totals.subtotal)}\n`;
-
+      
+      fullReceipt += `### Transaction Summary:\n`;
+      fullReceipt += `- **Total Item Cost:** ${formatPrice(totals.subtotal)}\n`;
+      fullReceipt += `- **Delivery Fee (10%):** ${formatPrice(totals.deliveryTax)}\n`;
+      
       if (isDelivery) {
-        fullReceipt += `Delivery Fee:    ${formatPrice(totals.deliveryTax)}\n`;
-        fullReceipt += `Delivery To:     ${deliveryAddress.value.trim()}\n`;
-      } else {
-        fullReceipt += `Collection At:   Seraphim Station\n`;
+        fullReceipt += `- **Delivery Location:** ${deliveryAddress.value.trim()}\n`;
       }
-
-      fullReceipt += `-----------------------------------------------\n`;
-      fullReceipt += `TOTAL AMOUNT:    ${formatPrice(totals.total)}\n`;
-      fullReceipt += `-----------------------------------------------\n\n`;
-
-      fullReceipt += `ORDER STATUS:\n`;
-      fullReceipt += `Payment Received: [ ] Pending\n`;
-      fullReceipt += `Items Ready:      [ ] Pending\n\n`;
-
-      fullReceipt += `FULFILLMENT METHOD: ${isDelivery ? 'Delivery' : 'Collection'}\n`;
-      if (isDelivery) {
-        fullReceipt += `DELIVERY LOCATION: ${deliveryAddress.value.trim()}\n`;
-      } else {
-        fullReceipt += `COLLECTION LOCATION: Seraphim Station\n`;
-      }
-
-      fullReceipt += `\n===============================================\n`;
-      fullReceipt += `Thank you for choosing The Seraph Armory!\n`;
-      fullReceipt += `\n`;
-      fullReceipt += `IMPORTANT:\n`;
-      fullReceipt += `- Keep this receipt for your records\n`;
-      fullReceipt += `- Use Order ID to track your order status\n`;
-      fullReceipt += `- Contact us on Discord for any questions\n`;
-      fullReceipt += `===============================================\n`;
+      
+      fullReceipt += `- **Final Transaction Amount:** ${formatPrice(totals.total)}\n\n`;
+      
+      fullReceipt += `*Payment Received:* ❌\n`;
+      fullReceipt += `*Item Transferred:* ❌\n\n`;
 
       // Create user confirmation message
       let userMessage = `🎉 **Order Placed Successfully!**\n\n`;
@@ -1139,12 +1489,16 @@
       userMessage += `🔍 **Track Your Order:** Visit our Order Status page and enter your Order ID\n\n`;
       userMessage += `Thank you for choosing Seraph Armory! 💖`;
 
-      // Store receipt data for download
-      window.currentOrderReceipt = {
-        content: fullReceipt,
-        filename: `seraph-armory-order-${discordUsername.value.trim()}-${Date.now()}.txt`,
-        orderId: orderId
-      };
+      // Download receipt as text file
+      const blob = new Blob([fullReceipt], { type: 'text/plain' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `seraph-armory-order-${discordUsername.value.trim()}-${Date.now()}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
 
       // Set processing flag to prevent cart closure
       orderProcessing = true;
@@ -1245,8 +1599,8 @@
           statusText.style.color = '#fff';
         }
 
-        // Show order success modal
-        showOrderSuccessModal(orderId);
+        // Show user confirmation and download receipt
+        alert(userMessage);
 
         // Clear cart and reset form
         cart = [];
@@ -1286,14 +1640,7 @@
       
       const variant = variantSelect ? variantSelect.value : 'Default - Free';
       const quantity = quantityInput ? parseInt(quantityInput.value) : 1;
-
-      // Validate quantity - prevent negative or zero quantities
-      if (quantity < 1 || isNaN(quantity)) {
-        alert('Please enter a valid quantity (minimum 1)');
-        if (quantityInput) quantityInput.value = 1;
-        return;
-      }
-
+      
       const [variantName, variantPrice] = variant.split(' - ');
       const actualPrice = variantPrice;
       
@@ -1395,6 +1742,7 @@
       formData.append('deliveryTax', orderData.deliveryTax);
       formData.append('total', orderData.total);
       formData.append('items', orderData.items.map(item => `${item.quantity}x ${item.name} (${item.variant}) - ${formatPrice(item.itemTotal)}`).join('\n'));
+      formData.append('itemsJson', JSON.stringify(orderData.items)); // Add JSON format for stock updates
       formData.append('itemCount', orderData.items.length);
       formData.append('status', orderData.status);
       formData.append('paymentReceived', orderData.paymentReceived);
@@ -1524,94 +1872,6 @@
     // Set random background on page load
     document.addEventListener('DOMContentLoaded', function() {
       setRandomBackground();
-    });
-
-    // Order Success Modal Functions
-    function showOrderSuccessModal(orderId) {
-      document.getElementById('success-order-id').textContent = orderId;
-      document.getElementById('order-success-modal').classList.remove('hidden');
-
-      // Set up download button
-      const downloadBtn = document.getElementById('download-receipt-btn');
-      downloadBtn.onclick = function() {
-        downloadCurrentReceipt();
-      };
-
-      // Add escape key listener
-      document.addEventListener('keydown', handleModalEscape);
-    }
-
-    function closeOrderSuccessModal() {
-      document.getElementById('order-success-modal').classList.add('hidden');
-      // Remove escape key listener
-      document.removeEventListener('keydown', handleModalEscape);
-    }
-
-    function handleModalEscape(e) {
-      if (e.key === 'Escape') {
-        closeOrderSuccessModal();
-      }
-    }
-
-    function downloadCurrentReceipt() {
-      if (window.currentOrderReceipt) {
-        const blob = new Blob([window.currentOrderReceipt.content], { type: 'text/plain' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = window.currentOrderReceipt.filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-
-        // Optional: Close modal after download
-        // closeOrderSuccessModal();
-      }
-    }
-
-    // Prevent negative quantities in all quantity inputs
-    document.addEventListener('DOMContentLoaded', function() {
-      const quantityInputs = document.querySelectorAll('.quantity-input');
-
-      quantityInputs.forEach(input => {
-        // Prevent negative values on input
-        input.addEventListener('input', function() {
-          if (this.value < 1) {
-            this.value = 1;
-          }
-        });
-
-        // Prevent negative values on blur (when user clicks away)
-        input.addEventListener('blur', function() {
-          if (this.value < 1 || this.value === '') {
-            this.value = 1;
-          }
-        });
-
-        // Prevent typing negative numbers and other invalid characters
-        input.addEventListener('keydown', function(e) {
-          // Allow: backspace, delete, tab, escape, enter
-          if ([8, 9, 27, 13, 46].indexOf(e.keyCode) !== -1 ||
-              // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
-              (e.keyCode === 65 && e.ctrlKey === true) ||
-              (e.keyCode === 67 && e.ctrlKey === true) ||
-              (e.keyCode === 86 && e.ctrlKey === true) ||
-              (e.keyCode === 88 && e.ctrlKey === true) ||
-              // Allow: home, end, left, right, down, up
-              (e.keyCode >= 35 && e.keyCode <= 40)) {
-            return;
-          }
-          // Ensure that it is a number and stop the keypress
-          if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
-            e.preventDefault();
-          }
-          // Prevent minus sign
-          if (e.keyCode === 189 || e.keyCode === 109) {
-            e.preventDefault();
-          }
-        });
-      });
     });
 
 
