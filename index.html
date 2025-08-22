@@ -639,10 +639,9 @@
         <div class="mb-6 text-left text-sm text-gray-300">
           <p class="mb-2"><strong style="color: #D3AF37;">What happens next?</strong></p>
           <div class="ml-2 space-y-2">
-            <p>✅ Your order has been automatically processed</p>
-            <p>✅ We'll ping you on Discord when it's ready to collect</p>
-            <p>✅ Track your order status anytime using the link below</p>
-            <p>✅ Download your receipt for your records (optional)</p>
+            <p>✔️ We'll ping you on Discord when it's ready to collect</p>
+            <p>✔️ Track your order status anytime using the link below</p>
+            <p>✔️ Download your receipt for your records (optional)</p>
           </div>
         </div>
 
@@ -757,7 +756,7 @@
   <!-- Toast Notification -->
   <div id="toast-notification" class="fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 z-50" style="background-color: #D3AF37; color: #141414;">
     <div class="flex items-center space-x-2">
-      <span>✅</span>
+      <span>✔️</span>
       <span id="toast-message">Item added to cart!</span>
     </div>
   </div>
@@ -1192,7 +1191,7 @@
 
           // Show success status
           if (statusDiv && statusText) {
-            statusText.textContent = '✅ Order successfully uploaded!';
+            statusText.textContent = '✔️ Order successfully uploaded!';
             statusText.style.backgroundColor = '#10b981';
             statusText.style.color = '#fff';
           }
@@ -1260,7 +1259,7 @@
 
         // Show final success status
         if (statusDiv && statusText) {
-          statusText.textContent = '✅ Order completed successfully!';
+          statusText.textContent = '✔️ Order completed successfully!';
           statusText.style.backgroundColor = '#10b981';
           statusText.style.color = '#fff';
 
