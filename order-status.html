@@ -26,7 +26,7 @@
 </head>
 <body class="text-white font-sans" style="background-color: #141414;">
 
-  <!-- Heade r -->
+  <!-- Header -->
   <header class="py-8 px-4 border-b border-opacity-20" style="background-color: #141414; border-color: #D3AF37;">
     <div class="max-w-6xl mx-auto flex items-center justify-between">
       <div class="flex items-center space-x-4">
@@ -97,7 +97,7 @@
                 <div id="status-ready" class="w-8 h-8 rounded-full border-2 border-gray-600 flex items-center justify-center mb-2">
                   <span class="text-xs">🚚</span>
                 </div>
-                <span class="text-xs text-gray-400">Shipping/Ready</span>
+                <span class="text-xs text-gray-400">Shipping</span>
               </div>
               <div class="flex-1 h-1 mx-2 bg-gray-600 rounded">
                 <div id="progress-bar-3" class="h-full bg-gray-600 rounded transition-all duration-500" style="width: 0%;"></div>
@@ -117,7 +117,6 @@
               📋 Received
             </div>
             <p class="text-gray-300" id="status-description">Your order has been received and is waiting to be processed.</p>
-            <p class="text-sm text-gray-400 mt-2" id="estimated-time">Estimated completion: ~2-4 hours</p>
           </div>
 
           <!-- Order Items -->
@@ -150,10 +149,6 @@
               <div>
                 <p class="text-gray-400">Payment Received:</p>
                 <p class="text-white" id="payment-status">❌</p>
-              </div>
-              <div>
-                <p class="text-gray-400">Items Transferred:</p>
-                <p class="text-white" id="transfer-status">❌</p>
               </div>
             </div>
           </div>
@@ -284,9 +279,8 @@
       document.getElementById('order-total').textContent = `${formatPrice(orderData.total)}`;
       document.getElementById('customer-discord').textContent = `@${orderData.discordUsername}`;
 
-      // Update payment and transfer status
+      // Update payment status
       document.getElementById('payment-status').textContent = orderData.paymentReceived ? '✅' : '❌';
-      document.getElementById('transfer-status').textContent = orderData.itemTransferred ? '✅' : '❌';
 
       // Update status progress
       updateStatusProgress(orderData.status);
@@ -329,40 +323,42 @@
           progressBars: [],
           badge: '📋 Received',
           description: 'Your order has been received and is waiting to be processed.',
-          estimatedTime: '~2-4 hours',
-          badgeColor: '#f59e0b'
+          badgeColor: '#6b7280'  // Gray
         },
         'Processing': {
           activeSteps: ['pending', 'processing'],
           progressBars: ['progress-bar-1'],
           badge: '⚙️ Processing',
           description: 'We are currently gathering your items and preparing your order.',
-          estimatedTime: '~1-2 hours',
-          badgeColor: '#3b82f6'
+          badgeColor: '#3b82f6'  // Blue
         },
         'Shipping': {
           activeSteps: ['pending', 'processing', 'ready'],
           progressBars: ['progress-bar-1', 'progress-bar-2'],
           badge: '🚚 Shipping',
           description: 'Your order is being delivered to the specified location.',
-          estimatedTime: '~30 minutes',
-          badgeColor: '#8b5cf6'
+          badgeColor: '#06b6d4'  // Turquoise
         },
         'Ready for Collection': {
           activeSteps: ['pending', 'processing', 'ready'],
           progressBars: ['progress-bar-1', 'progress-bar-2'],
           badge: '📦 Ready for Collection',
           description: 'Your order is ready! Please collect it at Seraphim Station.',
-          estimatedTime: 'Available now',
-          badgeColor: '#10b981'
+          badgeColor: '#10b981'  // Green
         },
         'Completed': {
           activeSteps: ['pending', 'processing', 'ready', 'completed'],
           progressBars: ['progress-bar-1', 'progress-bar-2', 'progress-bar-3'],
           badge: '✅ Completed',
           description: 'Your order has been completed successfully. Thank you!',
-          estimatedTime: 'Completed',
-          badgeColor: '#10b981'
+          badgeColor: '#10b981'  // Green
+        },
+        'Cancelled': {
+          activeSteps: [],
+          progressBars: [],
+          badge: '❌ Cancelled',
+          description: 'Your order has been cancelled. If you have any questions, please contact us.',
+          badgeColor: '#ef4444'  // Red
         }
       };
 
@@ -385,12 +381,10 @@
       // Update status badge and description
       const statusBadge = document.getElementById('current-status-badge');
       const statusDescription = document.getElementById('status-description');
-      const estimatedTime = document.getElementById('estimated-time');
 
       statusBadge.textContent = config.badge;
       statusBadge.style.backgroundColor = config.badgeColor;
       statusDescription.textContent = config.description;
-      estimatedTime.textContent = `Estimated completion: ${config.estimatedTime}`;
     }
 
     function showOrderLoading() {
