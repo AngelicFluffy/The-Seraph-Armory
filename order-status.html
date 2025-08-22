@@ -104,7 +104,7 @@
               </div>
               <div class="flex flex-col items-center">
                 <div id="status-completed" class="w-8 h-8 rounded-full border-2 border-gray-600 flex items-center justify-center mb-2">
-                  <span class="text-xs">✅</span>
+                  <span class="text-xs">✔️</span>
                 </div>
                 <span class="text-xs text-gray-400">Completed</span>
               </div>
@@ -303,7 +303,7 @@
       document.getElementById('customer-discord').textContent = `@${orderData.discordUsername}`;
 
       // Update payment status
-      document.getElementById('payment-status').textContent = orderData.paymentReceived ? '✅' : '❌';
+      document.getElementById('payment-status').textContent = orderData.paymentReceived ? '✔️' : '❌';
 
       // Update status progress
       updateStatusProgress(orderData.status);
@@ -372,7 +372,7 @@
         'Completed': {
           activeSteps: ['pending', 'processing', 'ready', 'completed'],
           progressBars: ['progress-bar-1', 'progress-bar-2', 'progress-bar-3'],
-          badge: '✅ Completed',
+          badge: '✔️ Completed',
           description: 'Your order has been completed successfully. Thank you!',
           badgeColor: '#10b981'  // Green
         },
