@@ -1,0 +1,7 @@
+# Site settings
+title: Seraph Armory
+url: "https://www.serapharmory.space"
+baseurl: "" # leave blank since you're using root
+
+# Enforce HTTPS & preferred domain
+enforce_ssl: www.serapharmory.space
