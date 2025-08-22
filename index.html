@@ -716,7 +716,7 @@
       SHEET_ID: '1nOJrh5M9wsw4cIz3MRBSfOKrfFIdOGcVwPwMKpo9u-s',
       // Google Apps Script Web App URL (NEW CLEAN DEPLOYMENT)
       APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbz8jN8tITpiH1d3Ow-pIgqHo_mpw9Yrtg3VupVYmbowDfloInM6WPHIj5r-plzprh95qw/exec',
-      RANGE: 'Orders!A:N'
+      RANGE: 'Orders!A:M'
     };
 
     function openImage(src) {
@@ -801,7 +801,11 @@
     }
 
     function parsePrice(priceStr) {
-      return parseInt(priceStr.replace(/[^\d]/g, ''));
+      if (priceStr.toLowerCase() === '0') {
+        return 0;
+      }
+      const numericValue = parseInt(priceStr.replace(/[^\d]/g, ''));
+      return isNaN(numericValue) ? 0 : numericValue;
     }
 
     function formatPrice(price) {
