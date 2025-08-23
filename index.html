@@ -698,6 +698,43 @@
     </div>
   </div>
 
+  <!-- Order Success Modal -->
+  <div id="order-success-modal" class="fixed inset-0 bg-black bg-opacity-75 hidden z-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4" style="background-color: #1a1a1a; border: 2px solid #D3AF37;">
+      <div class="p-8 text-center">
+        <!-- Header -->
+        <div class="mb-6">
+          <div class="text-2xl font-light mb-2" style="color: #D3AF37;">ORDER PLACED</div>
+          <div id="modal-order-id" class="text-xl font-medium text-white mb-4">ORDER ID: SA-123456</div>
+          <div class="text-lg text-gray-300">YOUR ORDER HAS BEEN RECEIVED</div>
+        </div>
+
+        <!-- Success Icon -->
+        <div class="text-6xl mb-6">✅</div>
+
+        <!-- Message -->
+        <div id="modal-message" class="text-sm text-gray-300 mb-8 text-left">
+          <!-- Order details will be inserted here -->
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="space-y-4">
+          <button onclick="downloadReceipt()" class="w-full py-3 text-sm font-medium rounded transition-all duration-300" style="background-color: #D3AF37; color: #141414;" onmouseover="this.style.backgroundColor='#b8941f'" onmouseout="this.style.backgroundColor='#D3AF37'">
+            📄 DOWNLOAD RECEIPT
+          </button>
+
+          <button onclick="goToTracking()" class="w-full py-3 text-sm font-medium rounded border border-opacity-30 transition-all duration-300" style="border-color: #D3AF37; color: #D3AF37; background-color: transparent;" onmouseover="this.style.backgroundColor='#D3AF37'; this.style.color='#141414'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#D3AF37'">
+            🔍 GO TO TRACKING
+          </button>
+
+          <button onclick="closeOrderModal()" class="w-full py-2 text-sm font-light text-gray-400 hover:text-white transition-colors duration-300">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     // Google Sheets Configuration
     window.GOOGLE_SHEETS_CONFIG = {
@@ -1254,6 +1291,62 @@
       return discordRegex.test(username) && hasLetter.test(username);
     }
 
+    // Order Success Modal Functions
+    function showOrderSuccessModal(orderId, message) {
+      const modal = document.getElementById('order-success-modal');
+      const orderIdElement = document.getElementById('modal-order-id');
+      const messageElement = document.getElementById('modal-message');
+
+      // Update modal content
+      orderIdElement.textContent = `ORDER ID: ${orderId}`;
+      messageElement.innerHTML = message.replace(/\n/g, '<br>');
+
+      // Show modal
+      modal.classList.remove('hidden');
+
+      // Prevent body scroll
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeOrderModal() {
+      const modal = document.getElementById('order-success-modal');
+      modal.classList.add('hidden');
+
+      // Restore body scroll
+      document.body.style.overflow = '';
+    }
+
+    function downloadReceipt() {
+      if (!window.orderReceiptData) {
+        alert('Receipt data not available');
+        return;
+      }
+
+      const { fullReceipt, orderId, discordUsername } = window.orderReceiptData;
+
+      // Create and download receipt file
+      const blob = new Blob([fullReceipt], { type: 'text/plain' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `seraph-armory-order-${discordUsername}-${Date.now()}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+
+      // Close modal after download
+      closeOrderModal();
+    }
+
+    function goToTracking() {
+      // Close modal first
+      closeOrderModal();
+
+      // Navigate to order status page
+      window.location.href = 'order-status.html';
+    }
+
     function removeFromCart(index) {
       cart.splice(index, 1);
       updateCartCount();
@@ -1561,16 +1654,12 @@
       userMessage += `🔍 **Track Your Order:** Visit our Order Status page and enter your Order ID\n\n`;
       userMessage += `Thank you for choosing Seraph Armory! 💖`;
 
-      // Download receipt as text file
-      const blob = new Blob([fullReceipt], { type: 'text/plain' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `seraph-armory-order-${discordUsername.value.trim()}-${Date.now()}.txt`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
+      // Store receipt data for modal
+      window.orderReceiptData = {
+        fullReceipt: fullReceipt,
+        orderId: orderId,
+        discordUsername: discordUsername.value.trim()
+      };
 
       // Set processing flag to prevent cart closure
       orderProcessing = true;
@@ -1671,8 +1760,8 @@
           statusText.style.color = '#fff';
         }
 
-        // Show user confirmation and download receipt
-        alert(userMessage);
+        // Show order success modal instead of alert
+        showOrderSuccessModal(orderId, userMessage);
 
         // Clear cart and reset form
         cart = [];
@@ -1837,31 +1926,28 @@
         url: APPS_SCRIPT_URL
       });
 
-      // Convert to URLSearchParams for better Google Apps Script compatibility
-      const formData = new URLSearchParams();
-      formData.append('action', secureOrderData.action);
-      formData.append('orderId', secureOrderData.orderId);
-      formData.append('timestamp', secureOrderData.timestamp);
-      formData.append('date', secureOrderData.date);
-      formData.append('discordUsername', secureOrderData.discordUsername);
-      formData.append('fulfillmentMethod', secureOrderData.fulfillmentMethod);
-      formData.append('deliveryLocation', secureOrderData.deliveryLocation);
-      formData.append('subtotal', secureOrderData.subtotal);
-      formData.append('deliveryTax', secureOrderData.deliveryTax);
-      formData.append('total', secureOrderData.total);
-      formData.append('items', JSON.stringify(secureOrderData.items));
-      formData.append('itemCount', secureOrderData.itemCount);
-      formData.append('status', secureOrderData.status);
-      formData.append('paymentReceived', secureOrderData.paymentReceived);
-      formData.append('itemTransferred', secureOrderData.itemTransferred);
-      formData.append('clientIP', secureOrderData.clientIP);
+      // Build URL with parameters for Google Apps Script compatibility
+      const params = new URLSearchParams({
+        action: secureOrderData.action,
+        orderId: secureOrderData.orderId,
+        timestamp: secureOrderData.timestamp,
+        date: secureOrderData.date,
+        discordUsername: secureOrderData.discordUsername,
+        fulfillmentMethod: secureOrderData.fulfillmentMethod,
+        deliveryLocation: secureOrderData.deliveryLocation,
+        subtotal: secureOrderData.subtotal,
+        deliveryTax: secureOrderData.deliveryTax,
+        total: secureOrderData.total,
+        items: JSON.stringify(secureOrderData.items),
+        itemCount: secureOrderData.itemCount,
+        status: secureOrderData.status,
+        paymentReceived: secureOrderData.paymentReceived,
+        itemTransferred: secureOrderData.itemTransferred,
+        clientIP: secureOrderData.clientIP
+      });
 
-      const response = await fetch(APPS_SCRIPT_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: formData
+      const response = await fetch(`${APPS_SCRIPT_URL}?${params.toString()}`, {
+        method: 'POST'
       });
 
       console.log('Response status:', response.status, response.statusText);
