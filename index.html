@@ -1374,7 +1374,13 @@
     }
 
     function parsePrice(priceStr) {
-      return parseInt(priceStr.replace(/[^\d]/g, ''));
+      // Handle free items and edge cases
+      if (!priceStr || priceStr.toLowerCase().includes('free')) {
+        return 0;
+      }
+
+      const numericValue = parseInt(priceStr.replace(/[^\d]/g, ''));
+      return isNaN(numericValue) ? 0 : numericValue;
     }
 
     function formatPrice(price) {
