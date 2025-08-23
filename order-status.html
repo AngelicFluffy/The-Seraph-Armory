@@ -256,20 +256,20 @@
         const { APPS_SCRIPT_URL } = window.GOOGLE_SHEETS_CONFIG;
 
         // Prepare data for lookup request
-        const formData = new FormData();
+        const params = new URLSearchParams();
+        params.append('action', 'lookupOrder');
 
         if (searchType === 'orderId') {
-          formData.append('orderId', searchValue);
+          params.append('orderId', searchValue);
         } else {
           // For username search, remove @ symbol and make case-insensitive
           const cleanUsername = searchValue.replace('@', '').trim();
-          formData.append('discordUsername', cleanUsername);
+          params.append('discordUsername', cleanUsername);
         }
 
         // Call Google Apps Script to lookup order using POST
-        const response = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          body: formData
+        const response = await fetch(`${APPS_SCRIPT_URL}?${params.toString()}`, {
+          method: 'POST'
         });
 
         if (!response.ok) {
@@ -277,10 +277,12 @@
         }
 
         const result = await response.json();
+        console.log('Lookup response:', result);
 
-        if (result.success) {
-          return result.orderData;
+        if (result.success && result.order) {
+          return result.order;
         } else {
+          console.log('Order not found:', result.error);
           return null; // Order not found
         }
 
