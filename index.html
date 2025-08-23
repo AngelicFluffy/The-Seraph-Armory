@@ -598,8 +598,7 @@
         });
       }
 
-      // Call renderWeapons initially and after data updates
-      renderWeapons();
+      // renderWeapons() will be called after weapon data is loaded in DOMContentLoaded
     </script>
 
   <!-- Image Modal -->
@@ -715,11 +714,11 @@
     window.weaponPriceData = null;
     window.lastWeaponDataUpdate = null;
 
-    // Fetch weapon data from Google Sheets
+    // Fetch weapon data from Google Apps Script (secure method)
     async function fetchWeaponData() {
       try {
-        console.log('Fetching weapon data from Google Sheets...');
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${window.GOOGLE_SHEETS_CONFIG.SHEET_ID}/values/${window.GOOGLE_SHEETS_CONFIG.WEAPONS_RANGE}?key=${window.GOOGLE_SHEETS_CONFIG.API_KEY}`;
+        console.log('Fetching weapon data from Google Apps Script...');
+        const url = window.GOOGLE_SHEETS_CONFIG.APPS_SCRIPT_URL;
 
         const response = await fetch(url);
         if (!response.ok) {
@@ -727,17 +726,21 @@
         }
 
         const data = await response.json();
-        if (!data.values || data.values.length < 2) {
-          throw new Error('No weapon data found in sheet');
+        if (!data || !data.success) {
+          throw new Error('Apps Script returned error: ' + (data.error || 'Unknown error'));
+        }
+
+        if (!data.data || !data.data.weapons || data.data.weapons.length < 2) {
+          throw new Error('No weapon data found in response');
         }
 
         // Parse the data (skip header row)
         const weaponPrices = {};
-        const headers = data.values[0];
+        const weaponData = data.data.weapons;
 
         // Expected columns: Name, Type, Varient, Stock, Buy in Game, (empty), Sell Price, Average Price, Buy Price
-        for (let i = 1; i < data.values.length; i++) {
-          const row = data.values[i];
+        for (let i = 1; i < weaponData.length; i++) {
+          const row = weaponData[i];
           if (row.length < 4) continue; // Skip incomplete rows
 
           const name = row[0];
@@ -1170,10 +1173,30 @@
       }
 
       const variant = variantSelect.value;
-      const quantity = parseInt(quantityInput.value);
+      let quantity = parseInt(quantityInput.value);
+
+      // Security: Validate quantity is positive integer
+      if (!quantity || quantity < 1 || quantity > 100 || !Number.isInteger(quantity)) {
+        showToast('Invalid quantity. Must be a positive number between 1 and 100.', 'error');
+        quantityInput.value = 1;
+        return;
+      }
+
+      // Security: Validate variant format
+      if (!variant || !variant.includes(' - ') || !variant.includes('aUEC')) {
+        showToast('Error: Invalid variant selection', 'error');
+        return;
+      }
 
       const [variantName, variantPrice] = variant.split(' - ');
       const price = variantPrice;
+
+      // Security: Validate price format
+      const priceNumber = parseInt(variantPrice.replace(/[^0-9]/g, ''));
+      if (!priceNumber || priceNumber < 0) {
+        showToast('Error: Invalid price detected', 'error');
+        return;
+      }
 
       // Check variant stock before adding to cart
       const variantStock = getVariantStock(name, variantName);
@@ -1198,9 +1221,9 @@
         existingItem.quantity += quantity;
       } else {
         cart.push({
-          name,
-          fullName,
-          variant: variantName,
+          name: sanitizeInput(name),
+          fullName: sanitizeInput(fullName),
+          variant: sanitizeInput(variantName),
           price,
           quantity
         });
@@ -1209,6 +1232,26 @@
       updateCartCount();
       renderCartSidebar();
       showToast(`Added ${quantity}x ${name} (${variantName}) to cart!`);
+    }
+
+    // Security: Input sanitization function
+    function sanitizeInput(input) {
+      if (typeof input !== 'string') return '';
+      return input.trim().substring(0, 100).replace(/[<>\"'&]/g, '');
+    }
+
+    // Security: Discord username validation
+    function validateDiscordUsername(username) {
+      if (!username || typeof username !== 'string') {
+        return false;
+      }
+
+      // Discord usernames: 2-32 characters, letters, numbers, underscores, periods
+      // Must contain at least one letter (cannot be only numbers)
+      const discordRegex = /^[a-zA-Z0-9_.]{2,32}$/;
+      const hasLetter = /[a-zA-Z]/;
+
+      return discordRegex.test(username) && hasLetter.test(username);
     }
 
     function removeFromCart(index) {
@@ -1402,6 +1445,10 @@
 
       if (!discordUsername || !discordUsername.value.trim()) {
         discordUsername.style.borderColor = '#ff0000';
+        hasErrors = true;
+      } else if (!validateDiscordUsername(discordUsername.value.trim())) {
+        discordUsername.style.borderColor = '#ff0000';
+        showToast('Invalid Discord username format. Must be 2-32 characters, letters/numbers/underscore/period, cannot be only numbers.', 'error');
         hasErrors = true;
       }
 
@@ -1755,34 +1802,65 @@
 
       const { APPS_SCRIPT_URL } = window.GOOGLE_SHEETS_CONFIG;
 
-      // Prepare data for Google Apps Script using FormData to avoid CORS issues
-      const formData = new FormData();
-      formData.append('orderId', orderData.orderId);
-      formData.append('timestamp', orderData.timestamp);
-      formData.append('date', orderData.date);
-      formData.append('discordUsername', orderData.discordUsername);
-      formData.append('fulfillmentMethod', orderData.fulfillmentMethod);
-      formData.append('deliveryLocation', orderData.deliveryLocation);
-      formData.append('subtotal', orderData.subtotal);
-      formData.append('deliveryTax', orderData.deliveryTax);
-      formData.append('total', orderData.total);
-      formData.append('items', orderData.items.map(item => `${item.quantity}x ${item.name} (${item.variant}) - ${formatPrice(item.itemTotal)}`).join('\n'));
-      formData.append('itemsJson', JSON.stringify(orderData.items)); // Add JSON format for stock updates
-      formData.append('itemCount', orderData.items.length);
-      formData.append('status', orderData.status);
-      formData.append('paymentReceived', orderData.paymentReceived);
-      formData.append('itemTransferred', orderData.itemTransferred);
-
-      // Send to Google Apps Script using FormData
-      console.log('Sending order to Google Sheets:', {
-        orderId: orderData.orderId,
+      // Prepare secure order data for server-side validation
+      const secureOrderData = {
+        action: 'submitOrder',
+        orderId: sanitizeInput(orderData.orderId),
         timestamp: orderData.timestamp,
-        discordUsername: orderData.discordUsername,
+        date: orderData.date,
+        discordUsername: sanitizeInput(orderData.discordUsername),
+        fulfillmentMethod: sanitizeInput(orderData.fulfillmentMethod),
+        deliveryLocation: sanitizeInput(orderData.deliveryLocation),
+        subtotal: orderData.subtotal,
+        deliveryTax: orderData.deliveryTax,
+        total: orderData.total,
+        items: orderData.items.map(item => ({
+          name: sanitizeInput(item.name),
+          fullName: sanitizeInput(item.fullName),
+          variant: sanitizeInput(item.variant),
+          price: item.price,
+          quantity: parseInt(item.quantity)
+        })),
+        itemCount: orderData.items.length,
+        status: 'Received',
+        paymentReceived: false,
+        itemTransferred: false,
+        clientIP: 'web-client' // Apps Script will handle IP detection
+      };
+
+      // Send to Google Apps Script with server-side validation
+      console.log('Sending secure order to Google Apps Script:', {
+        orderId: secureOrderData.orderId,
+        timestamp: secureOrderData.timestamp,
+        discordUsername: secureOrderData.discordUsername,
+        itemCount: secureOrderData.itemCount,
         url: APPS_SCRIPT_URL
       });
 
+      // Convert to URLSearchParams for better Google Apps Script compatibility
+      const formData = new URLSearchParams();
+      formData.append('action', secureOrderData.action);
+      formData.append('orderId', secureOrderData.orderId);
+      formData.append('timestamp', secureOrderData.timestamp);
+      formData.append('date', secureOrderData.date);
+      formData.append('discordUsername', secureOrderData.discordUsername);
+      formData.append('fulfillmentMethod', secureOrderData.fulfillmentMethod);
+      formData.append('deliveryLocation', secureOrderData.deliveryLocation);
+      formData.append('subtotal', secureOrderData.subtotal);
+      formData.append('deliveryTax', secureOrderData.deliveryTax);
+      formData.append('total', secureOrderData.total);
+      formData.append('items', JSON.stringify(secureOrderData.items));
+      formData.append('itemCount', secureOrderData.itemCount);
+      formData.append('status', secureOrderData.status);
+      formData.append('paymentReceived', secureOrderData.paymentReceived);
+      formData.append('itemTransferred', secureOrderData.itemTransferred);
+      formData.append('clientIP', secureOrderData.clientIP);
+
       const response = await fetch(APPS_SCRIPT_URL, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
         body: formData
       });
 
@@ -1799,15 +1877,22 @@
         const jsonResult = JSON.parse(result);
         console.log('Parsed response:', jsonResult);
 
-        if (jsonResult.error) {
-          throw new Error(jsonResult.error);
+        if (!jsonResult.success) {
+          throw new Error(jsonResult.error || 'Server-side validation failed');
         }
+
+        // Server validated the order and updated stock
+        console.log('Order validated and processed successfully:', {
+          orderId: jsonResult.orderId,
+          calculatedTotal: jsonResult.calculatedTotal,
+          message: jsonResult.message
+        });
+
         return jsonResult;
       } catch (parseError) {
         console.error('Failed to parse response as JSON:', parseError);
         console.log('Raw response was:', result);
-        // If we can't parse as JSON, just return success
-        return { success: true, message: 'Order sent successfully' };
+        throw new Error('Invalid response format from server');
       }
     }
 
