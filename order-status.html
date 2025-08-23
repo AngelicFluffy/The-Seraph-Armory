@@ -314,15 +314,39 @@
       // Update order items
       const itemsList = document.getElementById('order-items-list');
       itemsList.innerHTML = '';
-      orderData.items.forEach(item => {
+
+      // Handle items - could be string or array
+      if (typeof orderData.items === 'string') {
+        // Items are stored as a readable string like "2x Scourge Railgun (Stock) - 300,000 aUEC, 1x Animus Missile Launcher (Stock) - 300,000 aUEC"
+        const itemsString = orderData.items;
+        const itemsArray = itemsString.split(', ');
+
+        itemsArray.forEach(itemString => {
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'flex justify-between text-sm';
+          itemDiv.innerHTML = `
+            <span class="text-gray-300">${itemString}</span>
+          `;
+          itemsList.appendChild(itemDiv);
+        });
+      } else if (Array.isArray(orderData.items)) {
+        // Items are stored as array (legacy format)
+        orderData.items.forEach(item => {
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'flex justify-between text-sm';
+          itemDiv.innerHTML = `
+            <span class="text-gray-300">${item.quantity}x ${item.name} (${item.variant})</span>
+            <span class="text-white">${formatPrice(item.itemTotal)}</span>
+          `;
+          itemsList.appendChild(itemDiv);
+        });
+      } else {
+        // Fallback for unexpected format
         const itemDiv = document.createElement('div');
-        itemDiv.className = 'flex justify-between text-sm';
-        itemDiv.innerHTML = `
-          <span class="text-gray-300">${item.quantity}x ${item.name} (${item.variant})</span>
-          <span class="text-white">${formatPrice(item.itemTotal)}</span>
-        `;
+        itemDiv.className = 'text-sm text-gray-400';
+        itemDiv.textContent = 'Items information not available';
         itemsList.appendChild(itemDiv);
-      });
+      }
     }
 
     function updateStatusProgress(status) {
