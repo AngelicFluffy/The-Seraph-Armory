@@ -1585,74 +1585,71 @@
       const orderId = `SA-${currentTimestamp}`;
 
       // Create full receipt for file download
-      let fullReceipt = `## Receipt for @${discordUsername.value.trim()}\n`;
-      fullReceipt += `**Order ID:** ${orderId}\n`;
-      fullReceipt += `**Order Placed at:** <t:${currentTimestamp}:F>\n`;
-      fullReceipt += `**Order Started at:**\n`;
-      fullReceipt += `**Order Completed at:**\n\n`;
-      
-      fullReceipt += `### Purchased Items:\n`;
-      
+      let fullReceipt = `===============================================\n`;
+      fullReceipt += `           THE SERAPH ARMORY\n`;
+      fullReceipt += `        Star Citizen Equipment Store\n`;
+      fullReceipt += `===============================================\n\n`;
+
+      fullReceipt += `RECEIPT FOR: ${discordUsername.value.trim()}\n`;
+      fullReceipt += `ORDER ID: ${orderId}\n`;
+      fullReceipt += `DATE: ${currentDate}\n`;
+      fullReceipt += `STATUS: Received\n\n`;
+
+      fullReceipt += `-----------------------------------------------\n`;
+      fullReceipt += `PURCHASED ITEMS:\n`;
+      fullReceipt += `-----------------------------------------------\n`;
+
       cart.forEach((item, index) => {
         const itemPrice = parsePrice(item.price);
         const itemTotal = itemPrice * item.quantity;
-        
+
         fullReceipt += `${index + 1}. ${item.name}`;
         if (item.variant && item.variant !== 'Default') {
           fullReceipt += ` (${item.variant})`;
         }
         fullReceipt += `\n`;
-        fullReceipt += `   - **Quantity:** ${item.quantity}\n`;
-        fullReceipt += `   - **Unit Price:** ${formatPrice(itemPrice)}\n`;
-        fullReceipt += `   - **Total Cost:** ${formatPrice(itemTotal)}\n\n`;
+        fullReceipt += `   Quantity: ${item.quantity}\n`;
+        fullReceipt += `   Unit Price: ${formatPrice(itemPrice)}\n`;
+        fullReceipt += `   Item Total: ${formatPrice(itemTotal)}\n\n`;
       });
-      
-      fullReceipt += `### Transaction Summary:\n`;
-      fullReceipt += `- **Total Item Cost:** ${formatPrice(totals.subtotal)}\n`;
-      fullReceipt += `- **Delivery Fee (10%):** ${formatPrice(totals.deliveryTax)}\n`;
-      
-      if (isDelivery) {
-        fullReceipt += `- **Delivery Location:** ${deliveryAddress.value.trim()}\n`;
-      }
-      
-      fullReceipt += `- **Final Transaction Amount:** ${formatPrice(totals.total)}\n\n`;
-      
-      fullReceipt += `*Payment Received:* ❌\n`;
-      fullReceipt += `*Item Transferred:* ❌\n\n`;
 
-      // Create user confirmation message
-      let userMessage = `🎉 **Order Placed Successfully!**\n\n`;
-      userMessage += `**Order Details:**\n`;
-      userMessage += `• Order ID: ${orderId}\n`;
-      userMessage += `• Discord: @${discordUsername.value.trim()}\n`;
-      userMessage += `• Placed: ${currentDate}\n\n`;
-      
-      userMessage += `**Purchased Items:**\n`;
-      cart.forEach((item, index) => {
-        const itemPrice = parsePrice(item.price);
-        const itemTotal = itemPrice * item.quantity;
-        
-        userMessage += `${index + 1}. ${item.name}`;
-        if (item.variant && item.variant !== 'Default') {
-          userMessage += ` (${item.variant})`;
-        }
-        userMessage += `\n`;
-        userMessage += `   Quantity: x${item.quantity}\n`;
-        userMessage += `   Unit Price: ${formatPrice(itemPrice)}\n`;
-        userMessage += `   Total Cost: ${formatPrice(itemTotal)}\n\n`;
-      });
-      
-      userMessage += `**Order Total: ${formatPrice(totals.total)}**\n`;
-      userMessage += `**Fulfillment: ${isDelivery ? 'Delivery' : 'Collection at Seraphim Station'}**\n\n`;
-      
-      userMessage += `**What happens next?**\n`;
-      userMessage += `1. A receipt file has been downloaded to your computer\n`;
-      userMessage += `2. Please upload this receipt file to the marketplace channel in our Discord server\n`;
-      userMessage += `3. We will contact you within 72 hours to arrange payment and delivery\n`;
-      userMessage += `4. Your order will be updated in the item marketplace forum once it is started\n`;
-      userMessage += `5. Track your order anytime using your Order ID: ${orderId}\n\n`;
-      userMessage += `🔍 **Track Your Order:** Visit our Order Status page and enter your Order ID\n\n`;
-      userMessage += `Thank you for choosing Seraph Armory! 💖`;
+      fullReceipt += `-----------------------------------------------\n`;
+      fullReceipt += `TRANSACTION SUMMARY:\n`;
+      fullReceipt += `-----------------------------------------------\n`;
+      fullReceipt += `Subtotal:        ${formatPrice(totals.subtotal)}\n`;
+      fullReceipt += `Delivery Fee:    ${formatPrice(totals.deliveryTax)}\n`;
+
+      if (isDelivery) {
+        fullReceipt += `Delivery To:     ${deliveryAddress.value.trim()}\n`;
+      }
+
+      fullReceipt += `-----------------------------------------------\n`;
+      fullReceipt += `TOTAL AMOUNT:    ${formatPrice(totals.total)}\n`;
+      fullReceipt += `-----------------------------------------------\n\n`;
+
+      fullReceipt += `ORDER STATUS:\n`;
+      fullReceipt += `Payment Received: [ ] Pending\n`;
+      fullReceipt += `Items Ready:      [ ] Pending\n\n`;
+
+      fullReceipt += `FULFILLMENT METHOD: ${isDelivery ? 'Delivery' : 'Collection'}\n`;
+      if (isDelivery) {
+        fullReceipt += `DELIVERY LOCATION: ${deliveryAddress.value.trim()}\n`;
+      } else {
+        fullReceipt += `PICKUP LOCATION: Seraphim Station\n`;
+      }
+
+      fullReceipt += `\n===============================================\n`;
+      fullReceipt += `Thank you for choosing The Seraph Armory!\n\n`;
+      fullReceipt += `IMPORTANT:\n`;
+      fullReceipt += `- Keep this receipt for your records\n`;
+      fullReceipt += `- Use Order ID to track your order status\n`;
+      fullReceipt += `- Contact us on Discord for any questions\n`;
+      fullReceipt += `===============================================\n`;
+
+      // Create simple user confirmation message for modal
+      let userMessage = `Order Total: ${formatPrice(totals.total)}\n`;
+      userMessage += `Fulfillment: ${isDelivery ? 'Delivery' : 'Collection'}\n\n`;
+      userMessage += `We will contact you once your order is ready to be collected, you can track its status in the meantime by going to order status and entering your Order ID`;
 
       // Store receipt data for modal
       window.orderReceiptData = {
