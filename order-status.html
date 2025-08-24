@@ -205,6 +205,47 @@
       return price.toLocaleString() + ' aUEC';
     }
 
+    function formatOrderDate(dateInput) {
+      try {
+        // Handle different date formats
+        let date;
+
+        if (typeof dateInput === 'string') {
+          // Check if it's already in a readable format (MM/DD/YYYY, HH:MM:SS)
+          if (dateInput.includes('/') && dateInput.includes(',')) {
+            return dateInput; // Already formatted
+          }
+
+          // Parse ISO string or other formats
+          date = new Date(dateInput);
+        } else if (typeof dateInput === 'number') {
+          // Handle timestamp (seconds or milliseconds)
+          date = new Date(dateInput < 10000000000 ? dateInput * 1000 : dateInput);
+        } else {
+          date = new Date(dateInput);
+        }
+
+        // Check if date is valid
+        if (isNaN(date.getTime())) {
+          return dateInput; // Return original if can't parse
+        }
+
+        // Format as MM/DD/YYYY, HH:MM:SS
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const year = date.getFullYear();
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+
+        return `${month}/${day}/${year}, ${hours}:${minutes}:${seconds}`;
+
+      } catch (error) {
+        console.error('Error formatting date:', error);
+        return dateInput; // Return original if error
+      }
+    }
+
     // Order Status Tracking Functions
     async function trackOrder() {
       const orderIdInput = document.getElementById('order-id-input');
@@ -299,7 +340,7 @@
 
       // Update order details
       document.getElementById('order-id-display').textContent = `Order ID: ${orderData.orderId}`;
-      document.getElementById('order-date').textContent = orderData.date;
+      document.getElementById('order-date').textContent = formatOrderDate(orderData.date);
       document.getElementById('fulfillment-method').textContent = orderData.fulfillmentMethod === 'Collection' ? `Collection at ${orderData.deliveryLocation}` : `Delivery to ${orderData.deliveryLocation}`;
       document.getElementById('order-total').textContent = `${formatPrice(orderData.total)}`;
       document.getElementById('customer-discord').textContent = `@${orderData.discordUsername}`;
