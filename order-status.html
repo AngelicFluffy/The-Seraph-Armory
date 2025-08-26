@@ -6,12 +6,13 @@
   <title>Order Status - The Seraph Armory</title>
   <link rel="icon" type="image/png" href="https://i.imgur.com/JK0Qm5X.png">
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-
+  <script src="google-sheets-config.js"></script>
   <script>
     // Ensure config is available for order status page
     window.GOOGLE_SHEETS_CONFIG = {
-      // Google Apps Script Web App URL - This is meant to be public
-      APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbz8jN8tITpiH1d3Ow-pIgqHo_mpw9Yrtg3VupVYmbowDfloInM6WPHIj5r-plzprh95qw/exec'
+      SHEET_ID: '1nOJrh5M9wsw4cIz3MRBSfOKrfFIdOGcVwPwMKpo9u-s',
+      APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbz8jN8tITpiH1d3Ow-pIgqHo_mpw9Yrtg3VupVYmbowDfloInM6WPHIj5r-plzprh95qw/exec',
+      RANGE: 'Orders!A:N'
     };
   </script>
   <style>
@@ -156,7 +157,7 @@
           <!-- Contact Support -->
           <div class="border-t border-gray-600 pt-6 mt-6 text-center">
             <p class="text-gray-400 text-sm mb-2">Need help with your order?</p>
-            <p class="text-white text-sm">Contact us on Discord either directly, or in the market channel!</p>
+            <p class="text-white text-sm">Contact us on Discord or at Seraphim Station</p>
           </div>
         </div>
       </div>
@@ -203,47 +204,6 @@
         return price;
       }
       return price.toLocaleString() + ' aUEC';
-    }
-
-    function formatOrderDate(dateInput) {
-      try {
-        // Handle different date formats
-        let date;
-
-        if (typeof dateInput === 'string') {
-          // Check if it's already in a readable format (MM/DD/YYYY, HH:MM:SS)
-          if (dateInput.includes('/') && dateInput.includes(',')) {
-            return dateInput; // Already formatted
-          }
-
-          // Parse ISO string or other formats
-          date = new Date(dateInput);
-        } else if (typeof dateInput === 'number') {
-          // Handle timestamp (seconds or milliseconds)
-          date = new Date(dateInput < 10000000000 ? dateInput * 1000 : dateInput);
-        } else {
-          date = new Date(dateInput);
-        }
-
-        // Check if date is valid
-        if (isNaN(date.getTime())) {
-          return dateInput; // Return original if can't parse
-        }
-
-        // Format as MM/DD/YYYY, HH:MM:SS
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        const year = date.getFullYear();
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        const seconds = String(date.getSeconds()).padStart(2, '0');
-
-        return `${month}/${day}/${year}, ${hours}:${minutes}:${seconds}`;
-
-      } catch (error) {
-        console.error('Error formatting date:', error);
-        return dateInput; // Return original if error
-      }
     }
 
     // Order Status Tracking Functions
@@ -296,20 +256,21 @@
         const { APPS_SCRIPT_URL } = window.GOOGLE_SHEETS_CONFIG;
 
         // Prepare data for lookup request
-        const params = new URLSearchParams();
-        params.append('action', 'lookupOrder');
+        const formData = new FormData();
+        formData.append('action', 'lookupOrder');
 
         if (searchType === 'orderId') {
-          params.append('orderId', searchValue);
+          formData.append('orderId', searchValue);
         } else {
           // For username search, remove @ symbol and make case-insensitive
           const cleanUsername = searchValue.replace('@', '').trim();
-          params.append('discordUsername', cleanUsername);
+          formData.append('discordUsername', cleanUsername);
         }
 
         // Call Google Apps Script to lookup order using POST
-        const response = await fetch(`${APPS_SCRIPT_URL}?${params.toString()}`, {
-          method: 'POST'
+        const response = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          body: formData
         });
 
         if (!response.ok) {
@@ -319,8 +280,8 @@
         const result = await response.json();
         console.log('Lookup response:', result);
 
-        if (result.success && result.order) {
-          return result.order;
+        if (result.success) {
+          return result.orderData;
         } else {
           console.log('Order not found:', result.error);
           return null; // Order not found
@@ -340,7 +301,7 @@
 
       // Update order details
       document.getElementById('order-id-display').textContent = `Order ID: ${orderData.orderId}`;
-      document.getElementById('order-date').textContent = formatOrderDate(orderData.date);
+      document.getElementById('order-date').textContent = orderData.date;
       document.getElementById('fulfillment-method').textContent = orderData.fulfillmentMethod === 'Collection' ? `Collection at ${orderData.deliveryLocation}` : `Delivery to ${orderData.deliveryLocation}`;
       document.getElementById('order-total').textContent = `${formatPrice(orderData.total)}`;
       document.getElementById('customer-discord').textContent = `@${orderData.discordUsername}`;
@@ -354,39 +315,15 @@
       // Update order items
       const itemsList = document.getElementById('order-items-list');
       itemsList.innerHTML = '';
-
-      // Handle items - could be string or array
-      if (typeof orderData.items === 'string') {
-        // Items are stored as a readable string like "2x Scourge Railgun (Stock) - 300,000 aUEC, 1x Animus Missile Launcher (Stock) - 300,000 aUEC"
-        const itemsString = orderData.items;
-        const itemsArray = itemsString.split(', ');
-
-        itemsArray.forEach(itemString => {
-          const itemDiv = document.createElement('div');
-          itemDiv.className = 'flex justify-between text-sm';
-          itemDiv.innerHTML = `
-            <span class="text-gray-300">${itemString}</span>
-          `;
-          itemsList.appendChild(itemDiv);
-        });
-      } else if (Array.isArray(orderData.items)) {
-        // Items are stored as array (legacy format)
-        orderData.items.forEach(item => {
-          const itemDiv = document.createElement('div');
-          itemDiv.className = 'flex justify-between text-sm';
-          itemDiv.innerHTML = `
-            <span class="text-gray-300">${item.quantity}x ${item.name} (${item.variant})</span>
-            <span class="text-white">${formatPrice(item.itemTotal)}</span>
-          `;
-          itemsList.appendChild(itemDiv);
-        });
-      } else {
-        // Fallback for unexpected format
+      orderData.items.forEach(item => {
         const itemDiv = document.createElement('div');
-        itemDiv.className = 'text-sm text-gray-400';
-        itemDiv.textContent = 'Items information not available';
+        itemDiv.className = 'flex justify-between text-sm';
+        itemDiv.innerHTML = `
+          <span class="text-gray-300">${item.quantity}x ${item.name} (${item.variant})</span>
+          <span class="text-white">${formatPrice(item.itemTotal)}</span>
+        `;
         itemsList.appendChild(itemDiv);
-      }
+      });
     }
 
     function updateStatusProgress(status) {
