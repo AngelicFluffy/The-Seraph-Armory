@@ -6,7 +6,7 @@
   <title>The Seraph Armory</title>
   <link rel="icon" type="image/png" href="https://i.imgur.com/JK0Qm5X.png">
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-
+  <script src="google-sheets-config.js"></script>
   <style>
     html {
       scroll-behavior: smooth;
@@ -738,9 +738,12 @@
   <script>
     // Google Sheets Configuration
     window.GOOGLE_SHEETS_CONFIG = {
-      // Google Apps Script Web App URL - This is meant to be public
-      APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbz8jN8tITpiH1d3Ow-pIgqHo_mpw9Yrtg3VupVYmbowDfloInM6WPHIj5r-plzprh95qw/exec'
-      // Note: API_KEY removed for security - not needed with Apps Script
+      SHEET_ID: '1nOJrh5M9wsw4cIz3MRBSfOKrfFIdOGcVwPwMKpo9u-s',
+      // Google Apps Script Web App URL (NEW CLEAN DEPLOYMENT)
+      APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbz8jN8tITpiH1d3Ow-pIgqHo_mpw9Yrtg3VupVYmbowDfloInM6WPHIj5r-plzprh95qw/exec',
+      RANGE: 'Orders!A:N',
+      WEAPONS_RANGE: 'Handheld Weapons!A:I',
+      API_KEY: 'AIzaSyAHPBwiyIDWOa5nrewQJDOOq_9wlHe3Bsc'
     };
 
     // Weapon data cache
@@ -1371,13 +1374,7 @@
     }
 
     function parsePrice(priceStr) {
-      // Handle free items and edge cases
-      if (!priceStr || priceStr.toLowerCase().includes('free')) {
-        return 0;
-      }
-
-      const numericValue = parseInt(priceStr.replace(/[^\d]/g, ''));
-      return isNaN(numericValue) ? 0 : numericValue;
+      return parseInt(priceStr.replace(/[^\d]/g, ''));
     }
 
     function formatPrice(price) {
@@ -1959,27 +1956,29 @@
       const result = await response.text();
       console.log('Raw response:', result);
 
+      let jsonResult;
       try {
-        const jsonResult = JSON.parse(result);
+        jsonResult = JSON.parse(result);
         console.log('Parsed response:', jsonResult);
-
-        if (!jsonResult.success) {
-          throw new Error(jsonResult.error || 'Server-side validation failed');
-        }
-
-        // Server validated the order and updated stock
-        console.log('Order validated and processed successfully:', {
-          orderId: jsonResult.orderId,
-          calculatedTotal: jsonResult.calculatedTotal,
-          message: jsonResult.message
-        });
-
-        return jsonResult;
       } catch (parseError) {
         console.error('Failed to parse response as JSON:', parseError);
         console.log('Raw response was:', result);
         throw new Error('Invalid response format from server');
       }
+
+      if (!jsonResult.success) {
+        console.error('Server returned error:', jsonResult.error);
+        throw new Error(jsonResult.error || 'Server-side validation failed');
+      }
+
+      // Server validated the order and updated stock
+      console.log('Order validated and processed successfully:', {
+        orderId: jsonResult.orderId,
+        calculatedTotal: jsonResult.calculatedTotal,
+        message: jsonResult.message
+      });
+
+      return jsonResult;
     }
 
     // Close dropdown when clicking outside
