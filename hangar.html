@@ -6,96 +6,138 @@
   <title>Hangar - The Seraph Armory</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="icon" type="image/png" href="https://i.imgur.com/JK0Qm5X.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    * {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
     body {
       background-color: #141414;
-      font-family: 'Inter', sans-serif;
     }
-    .weapon-image {
-      transition: transform 0.3s ease;
+
+    .professional-card {
+      background: linear-gradient(145deg, #1a1a1a 0%, #1f1f1f 100%);
+      border: 1px solid rgba(211, 175, 55, 0.2);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(10px);
     }
-    .weapon-image:hover {
-      transform: scale(1.05);
+
+    .professional-card:hover {
+      border-color: rgba(211, 175, 55, 0.5);
+      box-shadow: 0 8px 32px rgba(211, 175, 55, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .nav-link:hover {
+      background-color: rgba(211, 175, 55, 0.1);
+      color: #D3AF37 !important;
+      transform: translateY(-1px);
     }
   </style>
 </head>
 <body class="text-white">
   <!-- Header -->
-  <header class="py-6 px-4 border-b border-opacity-20" style="border-color: #D3AF37;">
-    <div class="flex justify-between items-center">
+  <header class="py-8 px-4 border-b border-opacity-30 backdrop-blur-md" style="background-color: rgba(20, 20, 20, 0.95); border-color: #D3AF37;">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
       <div class="flex items-center space-x-4">
-        <img src="https://i.imgur.com/JK0Qm5X.png" alt="The Seraph Armory" class="h-12 w-12 rounded-full">
-        <h1 class="text-2xl font-light" style="color: #D3AF37;">The Seraph Armory</h1>
+        <img src="https://i.imgur.com/JK0Qm5X.png" alt="The Seraph Armory" class="h-14 w-14 rounded-full shadow-lg">
+        <div>
+          <h1 class="text-3xl font-bold" style="color: #D3AF37;">The Seraph Armory</h1>
+          <p class="text-sm text-gray-400 font-medium">Premium Weapons & Equipment</p>
+        </div>
       </div>
-      
+
       <!-- Navigation -->
       <nav>
-        <ul class="flex space-x-8 items-center">
-          <li><a href="index.html" class="font-light text-lg transition-colors duration-300" style="color: white;" onmouseover="this.style.color='#D3AF37'" onmouseout="this.style.color='white'">Home</a></li>
-          <li><a href="index.html#bundles" class="font-light text-lg transition-colors duration-300" style="color: white;" onmouseover="this.style.color='#D3AF37'" onmouseout="this.style.color='white'">Bundles</a></li>
-          <li><a href="index.html#weapons" class="font-light text-lg transition-colors duration-300" style="color: white;" onmouseover="this.style.color='#D3AF37'" onmouseout="this.style.color='white'">Weapons</a></li>
-          <li><a href="index.html#equipment" class="font-light text-lg transition-colors duration-300" style="color: white;" onmouseover="this.style.color='#D3AF37'" onmouseout="this.style.color='white'">Equipment</a></li>
-          
+        <ul class="flex space-x-2 items-center">
+          <li><a href="index.html" class="nav-link px-4 py-3 rounded-lg font-medium text-base transition-all duration-300" style="color: white;">Home</a></li>
+          <li><a href="index.html#bundles" class="nav-link px-4 py-3 rounded-lg font-medium text-base transition-all duration-300" style="color: white;">Bundles</a></li>
+          <li><a href="index.html#weapons" class="nav-link px-4 py-3 rounded-lg font-medium text-base transition-all duration-300" style="color: white;">Weapons</a></li>
+          <li><a href="index.html#equipment" class="nav-link px-4 py-3 rounded-lg font-medium text-base transition-all duration-300" style="color: white;">Equipment</a></li>
+
           <!-- Vertical Divider -->
-          <li class="flex items-center">
-            <div class="w-px h-6 mx-4" style="background-color: #D3AF37; opacity: 0.5;"></div>
+          <li class="flex items-center mx-4">
+            <div class="w-px h-8 bg-gradient-to-b from-transparent via-yellow-600 to-transparent opacity-50"></div>
           </li>
-          
-          <li><a href="hangar.html" class="font-light text-lg transition-colors duration-300" style="color: #D3AF37;">Hangar</a></li>
-          
-          <!-- Vertical Divider -->
-          <li class="flex items-center">
-            <div class="w-px h-6 mx-4" style="background-color: #D3AF37; opacity: 0.5;"></div>
-          </li>
-          
-          <li><a href="order-status.html" class="font-light text-lg transition-colors duration-300" style="color: white;" onmouseover="this.style.color='#D3AF37'" onmouseout="this.style.color='white'">Order Status</a></li>
+
+          <li><a href="hangar.html" class="nav-link px-4 py-3 rounded-lg font-medium text-base transition-all duration-300" style="color: #D3AF37; background-color: rgba(211, 175, 55, 0.1);">Hangar</a></li>
+          <li><a href="order-status.html" class="nav-link px-4 py-3 rounded-lg font-medium text-base transition-all duration-300" style="color: white;">Order Status</a></li>
         </ul>
       </nav>
     </div>
   </header>
 
   <!-- Hero Section -->
-  <section class="py-16 px-4 text-center" style="background-color: #141414;">
-    <h2 class="text-4xl font-light mb-4" style="color: #D3AF37;">🚀 Hangar</h2>
-    <p class="text-xl font-light text-gray-300 mb-8">Nothing here yet... Coming Soon!</p>
+  <section class="py-20 px-4 text-center" style="background-color: #141414;">
+    <div class="max-w-4xl mx-auto">
+      <div class="mb-12">
+        <h2 class="text-5xl font-bold mb-6" style="color: #D3AF37;">🚀 Hangar</h2>
+        <p class="text-2xl font-light text-gray-300">Ship components and services coming soon</p>
+      </div>
+    </div>
   </section>
 
   <!-- Main Content -->
-  <section class="py-16 px-4" style="background-color: #141414;">
-    <div class="max-w-4xl mx-auto text-center">
+  <section class="py-20 px-4" style="background-color: #141414;">
+    <div class="max-w-6xl mx-auto">
 
       <!-- Main Message Card -->
-      <div class="rounded-lg overflow-hidden shadow-lg border border-opacity-20 mb-12" style="background-color: #1a1a1a; border-color: #D3AF37;">
-        <div class="p-12">
-          <div class="text-6xl mb-6">🚀</div>
-          <h3 class="text-3xl font-light mb-6" style="color: #D3AF37;">Actively Buying!</h3>
-          <p class="text-xl text-gray-300 mb-8 leading-relaxed">
-            I am actively buying <strong>ship components</strong> and <strong>weapons</strong>!
+      <div class="professional-card rounded-2xl overflow-hidden shadow-2xl mb-16">
+        <div class="p-16 text-center">
+          <div class="w-24 h-24 mx-auto mb-8 rounded-full flex items-center justify-center" style="background: linear-gradient(135deg, #D3AF37 0%, #b8941f 100%);">
+            <span class="text-4xl">🚀</span>
+          </div>
+          <h3 class="text-4xl font-bold mb-8" style="color: #D3AF37;">Actively Buying Components!</h3>
+          <p class="text-2xl text-gray-300 mb-8 leading-relaxed font-light">
+            I am actively purchasing <strong class="text-white">ship components</strong> and <strong class="text-white">weapons</strong>
           </p>
-          <p class="text-lg text-gray-400 mb-8">
-            Got something to sell? Looking to offload inventory? Have rare components or weapons?
+          <p class="text-xl text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed">
+            Got inventory to sell? Looking to offload rare components or weapons?
+            I offer competitive prices and guarantee quick, professional transactions.
           </p>
 
           <!-- Call to Action -->
-          <div class="bg-opacity-20 rounded-lg p-6 mb-6" style="background-color: #D3AF37;">
-            <p class="text-xl font-medium mb-4" style="color: #D3AF37;">📩 Message Me With Your Offers!</p>
-            <p class="text-gray-300">
-              I'm interested in all types of ship components, weapons, and equipment.
-              Competitive prices and quick transactions guaranteed.
+          <div class="bg-gradient-to-r from-yellow-500/10 to-amber-500/10 rounded-2xl p-8 mb-12 border border-yellow-500/20">
+            <div class="flex items-center justify-center mb-4">
+              <svg class="w-8 h-8 mr-3" style="color: #D3AF37;" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+              </svg>
+              <h4 class="text-2xl font-bold" style="color: #D3AF37;">Ready to Sell?</h4>
+            </div>
+            <p class="text-lg text-gray-300 mb-6">
+              Contact me with your inventory list for immediate quotes on ship components, weapons, and equipment.
             </p>
+            <div class="text-sm text-gray-400">
+              ✔️ Competitive pricing • ✔️ Fast transactions • ✔️ Secure trades
+            </div>
           </div>
 
-          <!-- Contact Info -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-            <div class="text-center">
-              <div class="text-2xl mb-2">💬</div>
-              <p class="text-sm font-medium" style="color: #D3AF37;">Discord</p>
-              <p class="text-gray-400">Contact via Discord for fastest response</p>
+          <!-- Contact Methods -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="professional-card p-8 text-center">
+              <div class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style="background: linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%);">
+                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
+                </svg>
+              </div>
+              <h4 class="text-xl font-bold mb-3" style="color: #D3AF37;">Discord</h4>
+              <p class="text-gray-300 font-medium">Fastest response time</p>
+              <p class="text-sm text-gray-400 mt-2">Direct messaging preferred</p>
             </div>
-            <div class="text-center">
-              <div class="text-2xl mb-2">📧</div>
-              <p class="text-sm font-medium" style="color: #D3AF37;">In-Game</p>
-              <p class="text-gray-400">Send in-game messages for coordination</p>
+            <div class="professional-card p-8 text-center">
+              <div class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style="background: linear-gradient(135deg, #059669 0%, #047857 100%);">
+                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                </svg>
+              </div>
+              <h4 class="text-xl font-bold mb-3" style="color: #D3AF37;">In-Game</h4>
+              <p class="text-gray-300 font-medium">Direct coordination</p>
+              <p class="text-sm text-gray-400 mt-2">For meetup arrangements</p>
             </div>
           </div>
         </div>
