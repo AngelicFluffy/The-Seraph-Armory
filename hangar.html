@@ -1,183 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hangar - The Seraph Armory</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="icon" type="image/png" href="https://i.imgur.com/JK0Qm5X.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seraph Hangar | Coming Soon</title>
+  <link rel="icon" type="image/png" href="https://i.ibb.co/HLRNP3m4/1719-lpinkwing.gif">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
-    * {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-
     body {
       background-color: #141414;
+      color: white;
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
     }
 
-    .professional-card {
-      background: linear-gradient(145deg, #1a1a1a 0%, #1f1f1f 100%);
-      border: 1px solid rgba(211, 175, 55, 0.2);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      backdrop-filter: blur(10px);
+    /* Starfield background */
+    .starfield {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 3s infinite;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
     }
 
-    .professional-card:hover {
-      border-color: rgba(211, 175, 55, 0.5);
-      box-shadow: 0 8px 32px rgba(211, 175, 55, 0.1);
+    /* Coming soon card */
+    .coming-card {
+      position: relative;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid #D3AF37;
+      backdrop-filter: blur(12px);
+      border-radius: 1rem;
+      padding: 4rem 3rem;
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto;
+      box-shadow: 0 0 40px rgba(211, 175, 55, 0.1);
+    }
+
+    .title {
+      color: #D3AF37;
+      font-weight: 700;
+      font-size: 3rem;
+      text-shadow: 0 0 25px rgba(211, 175, 55, 0.4);
+    }
+
+    .subtitle {
+      color: #ccc;
+      font-size: 1.3rem;
+      margin-top: 1rem;
+    }
+
+    .button {
+      margin-top: 3rem;
+      background: linear-gradient(135deg, #D3AF37 0%, #b8941f 100%);
+      color: #141414;
+      font-weight: 600;
+      padding: 1rem 2.5rem;
+      border-radius: 0.75rem;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 25px rgba(211, 175, 55, 0.3);
+    }
+
+    .button:hover {
       transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(211, 175, 55, 0.5);
     }
 
-    .nav-link:hover {
-      background-color: rgba(211, 175, 55, 0.1);
-      color: #D3AF37 !important;
-      transform: translateY(-1px);
+    /* Simple animation for “coming soon” text */
+    @keyframes glow {
+      0%, 100% { opacity: 1; text-shadow: 0 0 20px rgba(211, 175, 55, 0.5); }
+      50% { opacity: 0.6; text-shadow: 0 0 10px rgba(211, 175, 55, 0.2); }
+    }
+    .glow {
+      animation: glow 2s infinite;
     }
   </style>
 </head>
-<body class="text-white">
-  <!-- Header -->
-  <header class="py-8 px-4 border-b border-opacity-30 backdrop-blur-md" style="background-color: rgba(20, 20, 20, 0.95); border-color: #D3AF37;">
-    <div class="max-w-7xl mx-auto flex justify-between items-center">
-      <div class="flex items-center space-x-4">
-        <img src="https://i.imgur.com/JK0Qm5X.png" alt="The Seraph Armory" class="h-14 w-14 rounded-full shadow-lg">
-        <div>
-          <h1 class="text-3xl font-bold" style="color: #D3AF37;">The Seraph Armory</h1>
-          <p class="text-sm text-gray-400 font-medium">Premium Weapons & Equipment</p>
-        </div>
-      </div>
+<body>
+  <div class="starfield" id="starfield"></div>
 
-      <!-- Navigation -->
-      <nav>
-        <ul class="flex space-x-2 items-center">
-          <li><a href="index.html" class="nav-link px-4 py-3 rounded-lg font-medium text-base transition-all duration-300" style="color: white;">Home</a></li>
-          <li><a href="index.html#bundles" class="nav-link px-4 py-3 rounded-lg font-medium text-base transition-all duration-300" style="color: white;">Bundles</a></li>
-          <li><a href="index.html#weapons" class="nav-link px-4 py-3 rounded-lg font-medium text-base transition-all duration-300" style="color: white;">Weapons</a></li>
-          <li><a href="index.html#equipment" class="nav-link px-4 py-3 rounded-lg font-medium text-base transition-all duration-300" style="color: white;">Equipment</a></li>
-
-          <!-- Vertical Divider -->
-          <li class="flex items-center mx-4">
-            <div class="w-px h-8 bg-gradient-to-b from-transparent via-yellow-600 to-transparent opacity-50"></div>
-          </li>
-
-          <li><a href="hangar.html" class="nav-link px-4 py-3 rounded-lg font-medium text-base transition-all duration-300" style="color: #D3AF37; background-color: rgba(211, 175, 55, 0.1);">Hangar</a></li>
-          <li><a href="order-status.html" class="nav-link px-4 py-3 rounded-lg font-medium text-base transition-all duration-300" style="color: white;">Order Status</a></li>
-        </ul>
-      </nav>
+  <main class="min-h-screen flex items-center justify-center px-6">
+    <div class="coming-card">
+      <h1 class="title glow">Welcome to the Hangar.</h1>
+      <p class="subtitle">This area is still under construction.<br>Check back soon, we hope to have ships and components listed here.</p>
+      <a href="index.html" class="button">Return to Armory</a>
     </div>
-  </header>
+  </main>
 
-  <!-- Hero Section -->
-  <section class="py-20 px-4 text-center" style="background-color: #141414;">
-    <div class="max-w-4xl mx-auto">
-      <div class="mb-12">
-        <h2 class="text-5xl font-bold mb-6" style="color: #D3AF37;">🚀 Hangar</h2>
-        <p class="text-2xl font-light text-gray-300">Ship components and services coming soon</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Main Content -->
-  <section class="py-20 px-4" style="background-color: #141414;">
-    <div class="max-w-6xl mx-auto">
-
-      <!-- Main Message Card -->
-      <div class="professional-card rounded-2xl overflow-hidden shadow-2xl mb-16">
-        <div class="p-16 text-center">
-          <div class="w-24 h-24 mx-auto mb-8 rounded-full flex items-center justify-center" style="background: linear-gradient(135deg, #D3AF37 0%, #b8941f 100%);">
-            <span class="text-4xl">🚀</span>
-          </div>
-          <h3 class="text-4xl font-bold mb-8" style="color: #D3AF37;">Actively Buying Components!</h3>
-          <p class="text-2xl text-gray-300 mb-8 leading-relaxed font-light">
-            I am actively purchasing <strong class="text-white">ship components</strong> and <strong class="text-white">weapons</strong>
-          </p>
-          <p class="text-xl text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed">
-            Got inventory to sell? Looking to offload rare components or weapons?
-            I offer competitive prices and guarantee quick, professional transactions.
-          </p>
-
-          <!-- Call to Action -->
-          <div class="bg-gradient-to-r from-yellow-500/10 to-amber-500/10 rounded-2xl p-8 mb-12 border border-yellow-500/20">
-            <div class="flex items-center justify-center mb-4">
-              <svg class="w-8 h-8 mr-3" style="color: #D3AF37;" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
-                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
-              </svg>
-              <h4 class="text-2xl font-bold" style="color: #D3AF37;">Ready to Sell?</h4>
-            </div>
-            <p class="text-lg text-gray-300 mb-6">
-              Contact me with your inventory list for immediate quotes on ship components, weapons, and equipment.
-            </p>
-            <div class="text-sm text-gray-400">
-              ✔️ Competitive pricing • ✔️ Fast transactions • ✔️ Secure trades
-            </div>
-          </div>
-
-          <!-- Contact Methods -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div class="professional-card p-8 text-center">
-              <div class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style="background: linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%);">
-                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
-                </svg>
-              </div>
-              <h4 class="text-xl font-bold mb-3" style="color: #D3AF37;">Discord</h4>
-              <p class="text-gray-300 font-medium">Fastest response time</p>
-              <p class="text-sm text-gray-400 mt-2">Direct messaging preferred</p>
-            </div>
-            <div class="professional-card p-8 text-center">
-              <div class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style="background: linear-gradient(135deg, #059669 0%, #047857 100%);">
-                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
-                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
-                </svg>
-              </div>
-              <h4 class="text-xl font-bold mb-3" style="color: #D3AF37;">In-Game</h4>
-              <p class="text-gray-300 font-medium">Direct coordination</p>
-              <p class="text-sm text-gray-400 mt-2">For meetup arrangements</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- Additional Info -->
-  <section class="py-16 px-4 text-center" style="background-color: #1a1a1a;">
-    <div class="max-w-4xl mx-auto">
-      <h3 class="text-2xl font-light mb-6" style="color: #D3AF37;">💼 What I'm Looking For</h3>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-        <div>
-          <div class="text-3xl mb-3">⚔️</div>
-          <h4 class="font-medium mb-2" style="color: #D3AF37;">Weapons</h4>
-          <p class="text-gray-400 text-sm">All weapon types, variants, and rarities</p>
-        </div>
-        <div>
-          <div class="text-3xl mb-3">🔧</div>
-          <h4 class="font-medium mb-2" style="color: #D3AF37;">Ship Components</h4>
-          <p class="text-gray-400 text-sm">Engines, shields, coolers, power plants</p>
-        </div>
-        <div>
-          <div class="text-3xl mb-3">🎯</div>
-          <h4 class="font-medium mb-2" style="color: #D3AF37;">Equipment</h4>
-          <p class="text-gray-400 text-sm">Tools, armor, medical supplies</p>
-        </div>
-      </div>
-      <p class="text-gray-400">
-        <strong>Fair prices, quick deals, reliable transactions.</strong><br>
-        Don't let your inventory collect dust - turn it into credits!
-      </p>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="py-8 px-4 border-t border-opacity-20 text-center" style="border-color: #D3AF37;">
-    <p class="text-gray-400">&copy; 2024 The Seraph Armory. All rights reserved.</p>
-  </footer>
-
+  <script>
+    // Generate stars for starfield
+    const starfield = document.getElementById('starfield');
+    for (let i = 0; i < 150; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.top = Math.random() * 100 + '%';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.animationDelay = Math.random() * 3 + 's';
+      starfield.appendChild(star);
+    }
+  </script>
 </body>
 </html>
